@@ -1,0 +1,15 @@
+{
+  "name": "trainportfolio",
+  "version": "1.0.0",
+  "description": "CMPM 169 Final Project & Portfolio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.150.1"
+  }
+}
