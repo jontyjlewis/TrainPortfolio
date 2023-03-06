@@ -1,4 +1,5 @@
-
+/dist
+/.parcel-cache
 .parcel-cache/0eec3c94b448e577
 .parcel-cache/0f817512aa19eef7.txt
 .parcel-cache/a9f5484dda8bfe2c
