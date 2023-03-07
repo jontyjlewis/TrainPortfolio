@@ -141,10 +141,6 @@ function animate(time) {
 }
 renderer.setAnimationLoop(animate);
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 // index.js
 $(document).ready(()=>{
     $('body').html('Hello World, if you see this message Parcel Bundler and Github Hosting are working nicely!');
