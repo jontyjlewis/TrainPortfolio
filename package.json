@@ -4,7 +4,7 @@
   "description": "CMPM 169 Final Project & Portfolio",
   "scripts": {
     "start": "parcel index.html",
-    "predeploy": "rmdir /s /q dist && parcel build index.html --public-url https://github.com/jontyjlewis/TrainPortfolio.git",
+    "predeploy": "rmdir /s /q dist && parcel build index.html --public-url https://jontyjlewis.github.io/TrainPortfolio/",
     "deploy": "gh-pages -d dist"
   },
   "keywords": [],
