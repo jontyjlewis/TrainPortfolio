@@ -680,8 +680,13 @@ function animate(time) {
 }
 renderer.setAnimationLoop(animate);
 // index.js
+<<<<<<< Updated upstream
 (0, _jqueryDefault.default)(document).ready(()=>{
     (0, _jqueryDefault.default)("body").html("Hello World, if you see this message Parcel Bundler and Github Hosting are working nicely!");
+=======
+$(document).ready(()=>{
+    $("body").html("Hello World, if you see this message Parcel Bundler and Github Hosting are working nicely!");
+>>>>>>> Stashed changes
 });
 
 },{"jquery":"hgMhh","popper.js":"dj939","bootstrap/dist/css/bootstrap.min.css":"i5LP7","bootstrap/dist/js/bootstrap":"9AxfY","three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","dat.gui":"k3xQk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hgMhh":[function(require,module,exports) {
@@ -44746,7 +44751,41 @@ if (typeof window !== "undefined") {
     else window.__THREE__ = REVISION;
 }
 
+<<<<<<< Updated upstream
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7mqRv":[function(require,module,exports) {
+=======
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"7mqRv":[function(require,module,exports) {
+>>>>>>> Stashed changes
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "OrbitControls", ()=>OrbitControls);
