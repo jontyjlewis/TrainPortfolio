@@ -1,3 +1,7 @@
+import $ from 'jquery'
+import 'popper.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap'
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
@@ -136,3 +140,8 @@ function animate(time) {
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+
+// index.js
+$(document).ready(()=>{
+    $('body').html('Hello World, if you see this message Parcel Bundler and Github Hosting are working nicely!');
+})
