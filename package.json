@@ -2,10 +2,9 @@
   "name": "trainportfolio",
   "version": "1.0.0",
   "description": "CMPM 169 Final Project & Portfolio",
-  "main": "index.js",
   "scripts": {
-    "start": "parcel ./*.html",
-    "predeploy": "rd /s dist && parcel build ./*.html --public-url https://github.com/jontyjlewis/TrainPortfolio.git",
+    "start": "parcel index.html",
+    "predeploy": "rmdir /s /q dist && parcel build index.html --public-url https://github.com/jontyjlewis/TrainPortfolio.git",
     "deploy": "gh-pages -d dist"
   },
   "keywords": [],
