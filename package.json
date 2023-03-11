@@ -2,14 +2,21 @@
   "name": "trainportfolio",
   "version": "1.0.0",
   "description": "CMPM 169 Final Project & Portfolio",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html",
+    "predeploy": "rmdir /s /q dist && parcel build index.html --public-url https://jontyjlewis.github.io/TrainPortfolio/",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^5.2.3",
+    "dat.gui": "^0.7.9",
+    "gh-pages": "^5.0.0",
+    "jquery": "^3.6.3",
+    "parcel": "^2.8.3",
+    "popper.js": "^1.16.1",
     "three": "^0.150.1"
   }
 }
