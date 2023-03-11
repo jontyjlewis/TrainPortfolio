@@ -6,7 +6,7 @@ import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRe
 
 let scene1, scene2, camera1, camera2, renderer1, renderer2;
 
-scene1 = new THREE.Scene();
+/*scene1 = new THREE.Scene();
 
 renderer1 = new THREE.WebGLRenderer();
 renderer1.setSize(window.innerWidth, window.innerHeight);
@@ -19,7 +19,7 @@ camera1 = new THREE.PerspectiveCamera(
     5000
 );
 const controls1 = new OrbitControls( camera1, renderer1.domElement );
-camera1.position.set( 0,2, 1 );
+camera1.position.set( 0,2, 1 );*/
 
 scene2 = new THREE.Scene();
 
@@ -35,21 +35,21 @@ camera2 = new THREE.PerspectiveCamera(
 );
 const controls2 = new OrbitControls( camera2, renderer2.domElement );
 camera2.position.set( 500, 350, 750 );
-controls1.update();
+//controls1.update();
 controls2.update();
 //add xyz axis
 const axesHelper = new THREE.AxesHelper(5);
-scene1.add(axesHelper);
+//scene1.add(axesHelper);
 //add a box 
 const boxGeometry = new THREE.BoxGeometry(2, 1, 1);
 const boxMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
-scene1.add(box);
+//scene1.add(box);
 //scene2.add(box);
 
 
 const iframe = document.createElement('iframe');
-iframe.src="https://www.youtube.com/watch?v=zW5wpJY1rgQ";
+iframe.src="https://threejs.org/";
 iframe.style.width = '100%';
 iframe.style.height = '100%';
 iframe.style.border = 'none';
@@ -63,10 +63,10 @@ scene2.add(element);
 
 // render the scene and the CSS2D elements
 function animate(time) {
-    controls1.update();
+    //controls1.update();
     controls2.update();
     requestAnimationFrame( animate );
-	renderer1.render( scene1, camera1 );
+	//renderer1.render( scene1, camera1 );
     renderer2.render( scene2, camera2 );
 
 }
