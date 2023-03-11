@@ -2,14 +2,19 @@
   "name": "trainportfolio",
   "version": "1.0.0",
   "description": "CMPM 169 Final Project & Portfolio",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel src/index.html"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^5.2.3",
+    "gh-pages": "^5.0.0",
+    "jquery": "^3.6.4",
+    "parcel": "^2.8.3",
+    "popper.js": "^1.16.1",
     "three": "^0.150.1"
   },
   "repository": {
