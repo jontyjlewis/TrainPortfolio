@@ -567,62 +567,154 @@ var _bootstrap = require("bootstrap/dist/js/bootstrap");
 var _three = require("three");
 var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
 var _gltfloaderJs = require("three/examples/jsm/loaders/GLTFLoader.js");
+var _treep5Png = require("../../assets/treep5.png");
+var _treep5PngDefault = parcelHelpers.interopDefault(_treep5Png);
 var _datGui = require("dat.gui");
-//create scene
-const scene = new _three.Scene();
-//set renderer
-const renderer = new _three.WebGLRenderer();
+let canvas, scene, camera, renderer, orbit;
+canvas = document.querySelector("canvas.webgl");
+scene = new _three.Scene();
+renderer = new _three.WebGLRenderer();
+renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-//set camera
-const camera = new _three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-camera.position.set(0, -18, 10);
-scene.add(camera);
+camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(30, 30, 50);
+// Floor Plane
+const planeGeometry = new _three.PlaneGeometry(300, 300);
+const planeMaterial = new _three.MeshStandardMaterial({
+    color: 0x00ff00,
+    side: _three.DoubleSide
+});
+const plane = new _three.Mesh(planeGeometry, planeMaterial);
+scene.add(plane);
+plane.rotation.x = -0.5 * Math.PI;
+plane.receiveShadow = true;
+const gridHelper = new _three.GridHelper(300, 50);
+scene.add(gridHelper);
+// Rail
+const rail1Geometry = new _three.BoxGeometry(1000, 1, 1);
+const rail1Material = new _three.MeshStandardMaterial({
+    color: 0x606060
+});
+const rail1 = new _three.Mesh(rail1Geometry, rail1Material);
+scene.add(rail1);
+rail1.position.set(0, 0, 4);
+const rail2Geometry = new _three.BoxGeometry(1000, 1, 1);
+const rail2Material = new _three.MeshStandardMaterial({
+    color: 0x606060
+});
+const rail2 = new _three.Mesh(rail2Geometry, rail2Material);
+scene.add(rail2);
+rail2.position.set(0, 0, -4);
+// Train Engine
+const trainGeometry = new _three.BoxGeometry(25, 12, 12);
+const trainMaterial = new _three.MeshStandardMaterial({
+    color: 0x111111,
+    visible: true
+});
+const train = new _three.Mesh(trainGeometry, trainMaterial);
+scene.add(train);
+train.position.set(32, 7, 0);
+train.castShadow = true;
+//texture
+var car1texture = new _three.TextureLoader().load("../../assets/treep5.png");
+//console.log(car1texture);
+// Train Car / Box
+const carGeometry = new _three.BoxGeometry(30, 10, 12);
+const carMaterial = new _three.MeshStandardMaterial({
+    color: 0xe50505,
+    visible: true
+});
+const car1Material = new _three.MeshStandardMaterial({
+    map: car1texture
+});
+const car = new _three.Mesh(carGeometry, car1Material);
+scene.add(car);
+car.position.set(0, 6, 0);
+car.castShadow = true;
+// Train Car2 / Box
+const car2Geometry = new _three.BoxGeometry(30, 10, 12);
+const car2Material = new _three.MeshStandardMaterial({
+    color: 0x193569,
+    visible: true
+});
+const car2 = new _three.Mesh(car2Geometry, car2Material);
+scene.add(car2);
+car2.position.set(-35, 6, 0);
+car2.castShadow = true;
+scene.fog = new _three.FogExp2(0xFFFFFF, 0.003);
+// BG
+renderer.setClearColor(0x8bb7ed);
+// GUI
+const gui = new _datGui.GUI();
+const options = {
+    car1Color: "#e50505",
+    visible: true,
+    car2Color: "#193569",
+    visible: true
+};
+gui.addColor(options, "car1Color").onChange(function(e) {
+    car.material.color.set(e);
+});
+gui.add(options, "visible").onChange(function(e) {
+    car.material.visible = e;
+});
+gui.addColor(options, "car2Color").onChange(function(e) {
+    car2.material.color.set(e);
+});
+gui.add(options, "visible").onChange(function(e) {
+    car2.material.visible = e;
+});
 //add light to the scene
-const ambientLight = new _three.AmbientLight(0xffffff, 0.5);
+const ambientLight = new _three.AmbientLight(0x222222, 0.5);
 scene.add(ambientLight);
-const directionalLight = new _three.DirectionalLight(0x00fffc, 0.5);
-//directionalLight.position.set(1,0.25,0);
+// Directional Light
+const directionalLight = new _three.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
+directionalLight.position.set(-100, 100, 100);
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.bottom = -50;
+directionalLight.shadow.camera.top = 50;
+directionalLight.shadow.camera.left = -50;
+directionalLight.shadow.camera.right = 50;
 const hemisphereLight = new _three.HemisphereLight(0xff0000, 0x0000ff, 0.2);
 scene.add(hemisphereLight);
 //import model loader
-const loader = new (0, _gltfloaderJs.GLTFLoader)();
-loader.load("srcjsTH.glb", // called when the resource is loaded
-function(gltf) {
-    scene.add(gltf.scene);
-//gltf.animations; // Array<THREE.AnimationClip>
-//gltf.scene; // THREE.Group
-//gltf.scenes; // Array<THREE.Group>
-//gltf.cameras; // Array<THREE.Camera>
-//gltf.asset; // Object
-}, // called while loading is progressing
-function(xhr) {
-    console.log(xhr.loaded / xhr.total * 100 + "% loaded");
-}, // called when loading has errors
-function(error) {
-    console.log("An error happened");
-});
-//add material to the mesh
-const material = new _three.MeshStandardMaterial({
-    color: "green"
-});
-material.roughness = 0.4;
-const boxGeometry = new _three.BoxGeometry(40, 20, 1);
-const box = new _three.Mesh(boxGeometry, material);
-box.position.set(0, 0, 0);
-//scene.add(box);
-const controls = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
-//add axis helper
-const axesHelper = new _three.AxesHelper(30);
-scene.add(axesHelper);
+/*const loader = new GLTFLoader();
+loader.load(
+    'src\js\TH.glb',
+	// called when the resource is loaded
+	function ( gltf ) {
+		scene.add( gltf.scene );
+		//gltf.animations; // Array<THREE.AnimationClip>
+		//gltf.scene; // THREE.Group
+		//gltf.scenes; // Array<THREE.Group>
+		//gltf.cameras; // Array<THREE.Camera>
+		//gltf.asset; // Object
+	},
+	// called while loading is progressing
+	function ( xhr ) {
+		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened' );
+	}
+);*/ orbit = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
+// Helpers (adds guide lines)
+// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+// scene.add(dLightHelper);
+// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// scene.add(dLightShadowHelper);
 function animate(time) {
-    controls.update();
+    // box.rotation.x = time / 1000;
+    // box.rotation.y = time / 1000;
+    orbit.update();
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","jquery":"hgMhh","popper.js":"dj939","bootstrap/dist/css/bootstrap.min.css":"i5LP7","bootstrap/dist/js/bootstrap":"9AxfY","three/examples/jsm/controls/OrbitControls.js":"7mqRv","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","dat.gui":"k3xQk"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","jquery":"hgMhh","popper.js":"dj939","bootstrap/dist/css/bootstrap.min.css":"i5LP7","bootstrap/dist/js/bootstrap":"9AxfY","three/examples/jsm/controls/OrbitControls.js":"7mqRv","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","dat.gui":"k3xQk","../../assets/treep5.png":"3xzbi"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -50607,6 +50699,43 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["dsOiS","3KHeD"], "3KHeD", "parcelRequire8176")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3xzbi":[function(require,module,exports) {
+module.exports = require("f00dbab90e0d2086").getBundleURL("c7ae0") + "treep5.55b23bc4.png" + "?" + Date.now();
+
+},{"f00dbab90e0d2086":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ("" + err.stack).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return "/";
+}
+function getBaseURL(url) {
+    return ("" + url).replace(/^((?:https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/.+)\/[^/]+$/, "$1") + "/";
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ("" + url).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error("Origin not found");
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}]},["dsOiS","3KHeD"], "3KHeD", "parcelRequire8176")
 
 //# sourceMappingURL=try.684fd210.js.map
