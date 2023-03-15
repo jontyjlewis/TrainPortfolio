@@ -1,0 +1,11 @@
+Model Information:
+* title:	Train Car (WIP)
+* source:	https://sketchfab.com/3d-models/train-car-wip-18b2160d27d54850906d4dfe7e90d63f
+* author:	evildavo (https://sketchfab.com/evildavo)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Train Car (WIP)" (https://sketchfab.com/3d-models/train-car-wip-18b2160d27d54850906d4dfe7e90d63f) by evildavo (https://sketchfab.com/evildavo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
