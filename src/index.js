@@ -29,8 +29,6 @@ renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-
-
 camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
@@ -40,7 +38,7 @@ camera = new THREE.PerspectiveCamera(
 camera.position.set(30, 30, 50);
 
 orbit = new OrbitControls(camera, renderer.domElement);
-orbit.update();
+
 
 
 
@@ -75,9 +73,6 @@ rail2.position.set(0, 0, -4);
 // Train Front Test
 const loader = new GLTFLoader();
 
-
-
-
 // Loading models
 // Train Head
 loader.load( trainHead, function ( gltf ) {
@@ -104,10 +99,6 @@ loader.load( tree1, function ( gltf ) {
 }, undefined, function ( error ) {
 	console.error( error );
 });
-
-
-
-
 
 // Train Engine
 const trainGeometry = new THREE.BoxGeometry(25, 12, 12);
@@ -192,7 +183,7 @@ gui.add(options, 'visible').onChange(function(e) {
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
-    
+    orbit.update();
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
