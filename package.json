@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "CMPM 169 Final Project & Portfolio",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel ./src/index.html",
     "predeploy": "rmdir /s /q dist && parcel build index.html --public-url https://jontyjlewis.github.io/TrainPortfolio/",
     "deploy": "gh-pages -d dist"
   },
@@ -17,6 +17,7 @@
     "jquery": "^3.6.4",
     "parcel": "^2.8.3",
     "popper.js": "^1.16.1",
-    "three": "^0.150.1"
+    "three": "^0.150.1",
+    "three-gltf-loader": "^1.111.0"
   }
 }
