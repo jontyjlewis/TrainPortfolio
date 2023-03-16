@@ -9,11 +9,13 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import car1Image from '../../assets/treep5.png';
 import * as dat from 'dat.gui';
 
-let canvas,scene, camera, renderer, orbit;
+let canvas,scene, camera, renderer, orbit, imagetest;
 
 canvas = document.querySelector('canvas.webgl');
 
 scene = new THREE.Scene();
+
+imagetest = require ('../../assets/treep5.png');
 
 renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
@@ -70,16 +72,24 @@ train.castShadow = true;
 
 //texture
 
-var car1texture = new THREE.TextureLoader().load('../../assets/treep5.png');
+var car1texture = new THREE.TextureLoader().load(imagetest);
 //console.log(car1texture);
+var car1Material = [
+    new THREE.MeshStandardMaterial({ color:0xe50505 }),
+    new THREE.MeshStandardMaterial({  color: 0xe50505 }),
+    new THREE.MeshStandardMaterial({  color: 0xe50505 }),
+    new THREE.MeshStandardMaterial({ color: 0xe50505 }),
+    new THREE.MeshStandardMaterial({ map: car1texture ,transparent:true, side:THREE.DoubleSide }),
+    new THREE.MeshStandardMaterial({ color: 0xe50505 }),
+]
 
 // Train Car / Box
-const carGeometry = new THREE.BoxGeometry(30, 10, 12);
+const carGeometry = new THREE.BoxGeometry(30, 12, 12);
 const carMaterial = new THREE.MeshStandardMaterial({
     color: 0xe50505,
     visible: true
 });
-const car1Material = new THREE.MeshStandardMaterial({map: car1texture});
+//const car1Material = new THREE.MeshBasicMaterial({map: car1texture});
 
 const car = new THREE.Mesh(carGeometry, car1Material);
 scene.add(car);

@@ -1,12 +1,17 @@
+//import modules
 import $ from 'jquery'
 import 'popper.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap'
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import car1Image from '../../assets/treep5.png';
 import * as dat from 'dat.gui';
 
-let scene, camera, renderer, orbit;
+let canvas,scene, camera, renderer, orbit;
+
+canvas = document.querySelector('canvas.webgl');
 
 scene = new THREE.Scene();
 
@@ -23,8 +28,7 @@ camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(30, 30, 50);
 
-orbit = new OrbitControls(camera, renderer.domElement);
-orbit.update();
+
 
 // Floor Plane
 const planeGeometry = new THREE.PlaneGeometry(300, 300);
@@ -64,13 +68,20 @@ scene.add(train);
 train.position.set(32, 7, 0);
 train.castShadow = true;
 
+//texture
+
+var car1texture = new THREE.TextureLoader().load('../../assets/treep5.png');
+//console.log(car1texture);
+
 // Train Car / Box
 const carGeometry = new THREE.BoxGeometry(30, 10, 12);
 const carMaterial = new THREE.MeshStandardMaterial({
     color: 0xe50505,
     visible: true
 });
-const car = new THREE.Mesh(carGeometry, carMaterial);
+const car1Material = new THREE.MeshStandardMaterial({map: car1texture});
+
+const car = new THREE.Mesh(carGeometry, car1Material);
 scene.add(car);
 car.position.set(0, 6, 0);
 car.castShadow = true;
@@ -86,25 +97,8 @@ scene.add(car2);
 car2.position.set(-35, 6, 0);
 car2.castShadow = true;
 
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
-scene.add(directionalLight);
-directionalLight.position.set(-100, 100, 100);
-directionalLight.castShadow = true;
-directionalLight.shadow.camera.bottom = -50;
-directionalLight.shadow.camera.top = 50;
-directionalLight.shadow.camera.left = -50;
-directionalLight.shadow.camera.right = 50;
 
-// Helpers (adds guide lines)
-// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-// scene.add(dLightHelper);
-// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-// scene.add(dLightShadowHelper);
 
-// Fog & ambient light
-const ambientLight = new THREE.AmbientLight(0x222222);
-scene.add(ambientLight);
 
 scene.fog = new THREE.FogExp2(0xFFFFFF, 0.003);
 
@@ -133,10 +127,60 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+//add light to the scene
+const ambientLight = new THREE.AmbientLight(0x222222, 0.5);
+scene.add(ambientLight);
+
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+scene.add(directionalLight);
+directionalLight.position.set(-100, 100, 100);
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.bottom = -50;
+directionalLight.shadow.camera.top = 50;
+directionalLight.shadow.camera.left = -50;
+directionalLight.shadow.camera.right = 50;
+
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.2);
+scene.add(hemisphereLight);
+
+//import model loader
+
+/*const loader = new GLTFLoader();
+loader.load(
+    'src\js\TH.glb',
+	// called when the resource is loaded
+	function ( gltf ) {
+		scene.add( gltf.scene );
+		//gltf.animations; // Array<THREE.AnimationClip>
+		//gltf.scene; // THREE.Group
+		//gltf.scenes; // Array<THREE.Group>
+		//gltf.cameras; // Array<THREE.Camera>
+		//gltf.asset; // Object
+	},
+	// called while loading is progressing
+	function ( xhr ) {
+		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened' );
+	}
+);*/
+orbit = new OrbitControls(camera, renderer.domElement);
+
+// Helpers (adds guide lines)
+// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+// scene.add(dLightHelper);
+// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// scene.add(dLightShadowHelper);
+
+
+
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
-    
+    orbit.update();
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
