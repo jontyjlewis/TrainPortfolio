@@ -1,8 +1,12 @@
+import $ from 'jquery';
+import 'popper.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 
-let scene, camera, renderer, orbit;
+let scene, camera, renderer, orbit, cFocus;
 
 scene = new THREE.Scene();
 
@@ -17,9 +21,11 @@ camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 );
-camera.position.set(30, 30, 50);
+camera.position.set(50, 50, 70);
 
 orbit = new OrbitControls(camera, renderer.domElement);
+orbit.autoRotate = true;
+orbit.autoRotateSpeed = 0.7;
 orbit.update();
 
 // Floor Plane
@@ -129,10 +135,59 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+// STUFF FOR MOUSE SELECTION BUT NOT WORKING CUZ OF RAYCASTER THINGY
+// const mousePosition = new THREE.Vector2();
+
+// window.addEventListener('mousemove', function(e) {
+//     mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+//     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+// });
+
+cFocus = train.position;
+const trainArray = [train, car, car2];
+const trainArrayPtr = 0;
+document.body.onkeyup = function(e) {
+    if (e.key == " " ||
+        e.code == "Space" ||
+        e.keyCode == 32
+    ) {
+        orbit.autoRotate = !orbit.autoRotate;
+        if(orbit.autoRotate == true) {
+            camera.position.set(50, 50, 70);
+        }
+        if(orbit.autoRotate == false) {
+            camera.position.set(0, 5, 30);
+        } 
+        // cFocus = car.position;
+    }
+
+    if (e.keyCode == 37) {
+        // if (trainArrayPtr < trainArray.length) {
+        //     trainArrayPtr++;
+        //     cFocus = trainArray[trainArrayPtr].position;
+        // }
+        cFocus = car.position;
+    }
+    if (e.keyCode == 39) {
+        cFocus = train.position;
+    }
+}
+
+
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
     
+    orbit.update();
+    camera.lookAt(cFocus);
+
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+
+// Allows the window to resize/scale as needed
+window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
