@@ -6,7 +6,7 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
-
+import gsap from 'gsap';
 
 // Train[100];
 // Train ({Model: dfasjkdfhjkaModel, position: (0,2,4),})
@@ -16,6 +16,7 @@ import * as dat from 'dat.gui';
 
 const canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit;
+
 
 // models imports
 let trainHead, tree1;
@@ -30,19 +31,17 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 
-
 camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
 );
-camera.position.set(30, 30, 50);
+// camera.position.set(30, 30, 50);
+camera.position.set(20,20,100);
 
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
-
-
 
 // Floor Plane
 const planeGeometry = new THREE.PlaneGeometry(300, 300);
@@ -74,7 +73,6 @@ rail2.position.set(0, 0, -4);
 
 // Train Front Test
 const loader = new GLTFLoader();
-
 
 
 
@@ -189,10 +187,25 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+/*
+let z;
+const zF = 200;*/
+window.addEventListener('mousedown', function(){
+    // z = camera.position.z;
+    gsap.to(camera.position,{
+        z: 200,
+        duration: 2
+    })
+});
+
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
-    
+
+    // z += 1;
+    // if (z < zF)
+    //     camera.position.z = z;
+
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
