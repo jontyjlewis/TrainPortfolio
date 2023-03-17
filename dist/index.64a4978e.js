@@ -579,12 +579,18 @@ camera.lookAt(0, 0, 0);
 const camera2 = new _three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 scene.add(camera2);
 camera2.position.set(0, 8, 20);
+// ORBIT CONTROL STUFF
 orbit = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
 orbit.autoRotate = true;
 orbit.autoRotateSpeed = 0.7;
 orbit.enableDamping = true;
 orbit.enablePan = false;
 orbit.update();
+// SHADOWS
+const shadowMapSize = {
+    width: 10000,
+    height: 10000
+};
 // Floor Plane
 const planeGeometry = new _three.PlaneGeometry(300, 300);
 const planeMaterial = new _three.MeshStandardMaterial({
@@ -595,8 +601,8 @@ const plane = new _three.Mesh(planeGeometry, planeMaterial);
 scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
-const gridHelper = new _three.GridHelper(300, 50);
-scene.add(gridHelper);
+// const gridHelper = new THREE.GridHelper(300, 50);
+// scene.add(gridHelper);
 // Rail
 const rail1Geometry = new _three.BoxGeometry(1000, 1, 1);
 const rail1Material = new _three.MeshStandardMaterial({
@@ -647,10 +653,13 @@ const directionalLight = new _three.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
 directionalLight.position.set(-100, 100, 100);
 directionalLight.castShadow = true;
-directionalLight.shadow.camera.bottom = -50;
-directionalLight.shadow.camera.top = 50;
-directionalLight.shadow.camera.left = -50;
-directionalLight.shadow.camera.right = 50;
+directionalLight.shadow.camera.bottom = -200;
+directionalLight.shadow.camera.top = 200;
+directionalLight.shadow.camera.left = -200;
+directionalLight.shadow.camera.right = 200;
+directionalLight.shadow.mapSize.width = shadowMapSize.width;
+directionalLight.shadow.mapSize.height = shadowMapSize.height;
+renderer.shadowMap.type = _three.PCFSoftShadowMap;
 // Helpers (adds guide lines)
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
 // scene.add(dLightHelper);
@@ -688,28 +697,35 @@ gui.add(options, "visible").onChange(function(e) {
 //     mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
 //     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
 // });
-// orbit.keys = {
-//     LEFT: 'ArrowLeft',
-//     UP: 'ArrowUp',
-//     RIGHT: 'ArrowRight',
-//     BOTTOM: 'ArrowDown'
-// }
-// orbit.listenToKeyEvents(window);
 let currCam = camera;
+let objArray = [
+    car2,
+    car,
+    train
+];
+let objPtr = 2;
+camera2.position.x = train.position.x;
 document.body.onkeyup = function(e) {
     if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
         orbit.autoRotate = !orbit.autoRotate;
         if (orbit.autoRotate == true) currCam = camera;
-        if (orbit.autoRotate == false) {
-            camera2.position.x = 32;
-            currCam = camera2;
-        }
+        if (orbit.autoRotate == false) currCam = camera2;
     }
     if (currCam == camera2) {
         // left arrow key
-        if (e.keyCode == 37) camera2.position.x -= 32;
+        if (e.keyCode == 37) {
+            if (objPtr > 0) {
+                objPtr--;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
+        }
         // right arrow key
-        if (e.keyCode == 39) camera2.position.x += 32;
+        if (e.keyCode == 39) {
+            if (objPtr < objArray.length) {
+                objPtr++;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
+        }
     }
 };
 function animate(time) {

@@ -5,6 +5,7 @@ import 'bootstrap/dist/js/bootstrap';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
+import { LightShadow } from 'three';
 
 let scene, camera, renderer, orbit, cFocus;
 
@@ -34,12 +35,19 @@ const camera2 = new THREE.PerspectiveCamera(
 scene.add(camera2);
 camera2.position.set(0, 8, 20);
 
+// ORBIT CONTROL STUFF
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.autoRotate = true;
 orbit.autoRotateSpeed = 0.7;
 orbit.enableDamping = true;
 orbit.enablePan = false;
 orbit.update();
+
+// SHADOWS
+const shadowMapSize = {
+    width: 10000,
+    height: 10000
+}
 
 // Floor Plane
 const planeGeometry = new THREE.PlaneGeometry(300, 300);
@@ -52,8 +60,8 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 
-const gridHelper = new THREE.GridHelper(300, 50);
-scene.add(gridHelper);
+// const gridHelper = new THREE.GridHelper(300, 50);
+// scene.add(gridHelper);
 
 // Rail
 const rail1Geometry = new THREE.BoxGeometry(1000, 1, 1);
@@ -106,10 +114,14 @@ const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
 directionalLight.position.set(-100, 100, 100);
 directionalLight.castShadow = true;
-directionalLight.shadow.camera.bottom = -50;
-directionalLight.shadow.camera.top = 50;
-directionalLight.shadow.camera.left = -50;
-directionalLight.shadow.camera.right = 50;
+directionalLight.shadow.camera.bottom = -200;
+directionalLight.shadow.camera.top = 200;
+directionalLight.shadow.camera.left = -200;
+directionalLight.shadow.camera.right = 200;
+
+directionalLight.shadow.mapSize.width = shadowMapSize.width;
+directionalLight.shadow.mapSize.height = shadowMapSize.height;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Helpers (adds guide lines)
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
@@ -156,15 +168,10 @@ gui.add(options, 'visible').onChange(function(e) {
 //     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
 // });
 
-// orbit.keys = {
-//     LEFT: 'ArrowLeft',
-//     UP: 'ArrowUp',
-//     RIGHT: 'ArrowRight',
-//     BOTTOM: 'ArrowDown'
-// }
-// orbit.listenToKeyEvents(window);
-
 let currCam = camera;
+let objArray = [car2, car, train];
+let objPtr = 2;
+camera2.position.x = train.position.x;
 document.body.onkeyup = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||
@@ -175,18 +182,23 @@ document.body.onkeyup = function(e) {
             currCam = camera;
         }
         if(orbit.autoRotate == false) {
-            camera2.position.x = 32;
             currCam = camera2;
         } 
     }
     if(currCam == camera2) {
         // left arrow key
         if (e.keyCode == 37) {
-            camera2.position.x -= 32;
+            if(objPtr > 0) {
+                objPtr--;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
         }
         // right arrow key
         if (e.keyCode == 39) {
-            camera2.position.x += 32;
+            if(objPtr < objArray.length) {
+                objPtr++;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
         }
     }
 }
