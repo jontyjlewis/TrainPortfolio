@@ -21,11 +21,24 @@ camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 );
+scene.add(camera);
 camera.position.set(50, 50, 70);
+camera.lookAt(0, 0, 0);
+
+const camera2 = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+scene.add(camera2);
+camera2.position.set(0, 8, 20);
 
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.autoRotate = true;
 orbit.autoRotateSpeed = 0.7;
+orbit.enableDamping = true;
+orbit.enablePan = false;
 orbit.update();
 
 // Floor Plane
@@ -143,9 +156,15 @@ gui.add(options, 'visible').onChange(function(e) {
 //     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
 // });
 
-cFocus = train.position;
-const trainArray = [train, car, car2];
-const trainArrayPtr = 0;
+// orbit.keys = {
+//     LEFT: 'ArrowLeft',
+//     UP: 'ArrowUp',
+//     RIGHT: 'ArrowRight',
+//     BOTTOM: 'ArrowDown'
+// }
+// orbit.listenToKeyEvents(window);
+
+let currCam = camera;
 document.body.onkeyup = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||
@@ -153,41 +172,35 @@ document.body.onkeyup = function(e) {
     ) {
         orbit.autoRotate = !orbit.autoRotate;
         if(orbit.autoRotate == true) {
-            camera.position.set(50, 50, 70);
+            currCam = camera;
         }
         if(orbit.autoRotate == false) {
-            camera.position.set(0, 5, 30);
+            camera2.position.x = 32;
+            currCam = camera2;
         } 
-        // cFocus = car.position;
     }
-
-    if (e.keyCode == 37) {
-        // if (trainArrayPtr < trainArray.length) {
-        //     trainArrayPtr++;
-        //     cFocus = trainArray[trainArrayPtr].position;
-        // }
-        cFocus = car.position;
-    }
-    if (e.keyCode == 39) {
-        cFocus = train.position;
+    if(currCam == camera2) {
+        // left arrow key
+        if (e.keyCode == 37) {
+            camera2.position.x -= 32;
+        }
+        // right arrow key
+        if (e.keyCode == 39) {
+            camera2.position.x += 32;
+        }
     }
 }
 
-
 function animate(time) {
-    // box.rotation.x = time / 1000;
-    // box.rotation.y = time / 1000;
-    
     orbit.update();
-    camera.lookAt(cFocus);
 
-    renderer.render(scene, camera);
+    renderer.render(scene, currCam);
 }
 renderer.setAnimationLoop(animate);
 
 // Allows the window to resize/scale as needed
 window.addEventListener('resize', function() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    currCam.aspect = window.innerWidth / window.innerHeight;
+    currCam.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
