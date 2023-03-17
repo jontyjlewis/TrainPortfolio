@@ -1,12 +1,26 @@
-import $ from 'jquery'
+import $ from 'jquery';
 import 'popper.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'dat.gui';
+// import * as dat from "dat.gui";
 
+
+// Train[100];
+// Train ({Model: dfasjkdfhjkaModel, position: (0,2,4),})
+// if(!Paused){
+///     Train[i].position.x++;
+/// }
+
+const canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit;
+
+// models imports
+let trainHead, tree1;
+trainHead = require('../assets/TrainHeadLit.glb');
+tree1 = require('../assets/Tree1.glb');
 
 scene = new THREE.Scene();
 
@@ -14,6 +28,8 @@ renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+
 
 camera = new THREE.PerspectiveCamera(
     45,
@@ -25,6 +41,8 @@ camera.position.set(30, 30, 50);
 
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
+
+
 
 // Floor Plane
 const planeGeometry = new THREE.PlaneGeometry(300, 300);
@@ -52,6 +70,44 @@ const rail2Material = new THREE.MeshStandardMaterial({color: 0x606060});
 const rail2 = new THREE.Mesh(rail2Geometry, rail2Material);
 scene.add(rail2);
 rail2.position.set(0, 0, -4);
+
+
+// Train Front Test
+const loader = new GLTFLoader();
+
+
+
+
+// Loading models
+// Train Head
+loader.load( trainHead, function ( gltf ) {
+    
+	const trainHeadModel = gltf.scene;
+    trainHeadModel.metalness = 1;
+    trainHeadModel.scale.set(4,4,4);
+    scene.add(trainHeadModel);
+    trainHeadModel.position.set(-65, 0, 0);
+    trainHeadModel.castShadow = true;
+    trainHeadModel.rotateY(-3.14159/2);
+
+}, undefined, function ( error ) {
+	console.error( error );
+});
+// Tree1
+let tree1Model;
+loader.load( tree1, function ( gltf ) {
+    tree1Model = gltf.scene;
+    scene.add(tree1Model);
+    tree1Model.position.set(0, 0, 10);
+    tree1Model.castShadow = true;
+    tree1Model.scale.set(4,4,4);
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+
+
+
 
 // Train Engine
 const trainGeometry = new THREE.BoxGeometry(25, 12, 12);
@@ -86,8 +142,8 @@ scene.add(car2);
 car2.position.set(-35, 6, 0);
 car2.castShadow = true;
 
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+// Directional Light Messing --- with values here ~Skyler
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 10);
 scene.add(directionalLight);
 directionalLight.position.set(-100, 100, 100);
 directionalLight.castShadow = true;
@@ -103,10 +159,10 @@ directionalLight.shadow.camera.right = 50;
 // scene.add(dLightShadowHelper);
 
 // Fog & ambient light
-const ambientLight = new THREE.AmbientLight(0x222222);
+const ambientLight = new THREE.AmbientLight(0x222222, 1.6);
 scene.add(ambientLight);
 
-scene.fog = new THREE.FogExp2(0xFFFFFF, 0.003);
+scene.fog = new THREE.FogExp2(0xFFFFFF, 0.001);
 
 // BG
 renderer.setClearColor(0x8bb7ed);
