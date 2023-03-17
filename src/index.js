@@ -14,8 +14,11 @@ import * as dat from 'dat.gui';
 ///     Train[i].position.x++;
 /// }
 
-const canvas = document.querySelector('.webgl');
-let scene, camera, renderer, orbit;
+//const canvas = document.querySelector('.webgl');
+let scene, camera, renderer, orbit, canvas;
+
+canvas = document.querySelector('canvas.webgl');
+const textposition = new THREE.Vector3();
 
 // models imports
 let trainHead, tree1;
@@ -38,9 +41,6 @@ camera = new THREE.PerspectiveCamera(
 camera.position.set(30, 30, 50);
 
 orbit = new OrbitControls(camera, renderer.domElement);
-
-
-
 
 // Floor Plane
 const planeGeometry = new THREE.PlaneGeometry(300, 300);
@@ -180,9 +180,13 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
+    if(car){
+        
+    }
     orbit.update();
     renderer.render(scene, camera);
 }
