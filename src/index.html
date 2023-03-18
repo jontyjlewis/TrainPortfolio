@@ -8,20 +8,18 @@
     <title>Train Portfolio</title>
 </head>
 <body>
-    <button onclick="showText()">Show Text</button>
-    <div id = "follow-text" class = "follow-text">
-         test text
+
+    <div id = "follow-text-one" class = "follow-text">
+         test text 1
     </div>
-    <script>
-        function showText() {
-            var x = document.getElementById("follow-text");
-            if (x.style.display === "none"){
-                x.style.display = "block";
-            }else{
-                x.style.display = "none";
-            }
-}
-    </script>
+
+    <div id = "follow-text-two" class = "follow-text">
+        test text 2
+   </div>
+   <div id = "follow-text-three" class = "follow-text">
+    test text 3
+    </div>
+
     <script src="textManager.js" type="javascript"></script>
     <script src="index.js" type="module"></script>
 </body>

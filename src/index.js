@@ -310,8 +310,6 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
   }
-
-
 let thisTrack;
 
 
@@ -329,7 +327,11 @@ let objPtr = 2;
 camera2.position.x = train.position.x;
 
 const textposition1 = new THREE.Vector3();
-const followText1 = document.getElementById('follow-text');
+const followText1 = document.getElementById('follow-text-one');
+const textposition2 = new THREE.Vector3();
+const followText2 = document.getElementById('follow-text-two');
+const textposition3 = new THREE.Vector3();
+const followText3 = document.getElementById('follow-text-three');
 canvas = document.querySelector('canvas');
 
 document.body.onkeydown = function(e) {
@@ -337,16 +339,20 @@ document.body.onkeydown = function(e) {
         e.code == "Space" ||
         e.keyCode == 32
     ) {
-        
         orbit.autoRotate = !orbit.autoRotate;
         if(orbit.autoRotate == true) {
             currCam = camera;
             hideText(followText1);
+            hideText(followText2);
+            hideText(followText3);
         }
         if(orbit.autoRotate == false) {
 
             currCam = camera2;
             showText(followText1);
+            showText(followText2);
+            showText(followText3);
+
         } 
     }
     if(currCam == camera2) {
@@ -370,7 +376,9 @@ document.body.onkeydown = function(e) {
 
 function animate(time) {
     orbit.update();
-    addFollowText(textposition1, followText1, car, camera2, canvas);
+    addFollowText(textposition1, followText1, car2, camera2, canvas);
+    addFollowText(textposition2, followText2, car, camera2, canvas);
+    addFollowText(textposition3, followText3, train, camera2, canvas);
     
     if(treeModels.length == 5){
         
