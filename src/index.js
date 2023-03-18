@@ -194,7 +194,7 @@ window.addEventListener('mousedown', function(){
     // z = camera.position.z;
     gsap.to(camera.position,{
         z: 200,
-        duration: 2
+        duration: 2,
     })
 });
 
