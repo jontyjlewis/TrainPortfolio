@@ -61,6 +61,17 @@ const camera2 = new THREE.PerspectiveCamera(
 scene.add(camera2);
 camera2.position.set(0, 8, 20);
 
+/*
+const cameraT = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+scene.add(cameraT);
+cameraT.position.set(0, 8, 20);
+*/
+
 // ORBIT CONTROL STUFF
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.autoRotate = true;
@@ -381,12 +392,8 @@ function animate(time) {
             thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
             trainTracks.children.pop();
             trainTracks.children.unshift(thisTrack);
-            
            }
        }
-       
-       
-
     }
     renderer.render(scene, currCam);
 }
@@ -398,7 +405,6 @@ function resetCarts(){
         carts[i].position.x = carts_ipos[i].x;
         carts[i].position.y = carts_ipos[i].y;
         carts[i].position.z = carts_ipos[i].z;
-        
     }
 }*/
 
@@ -429,3 +435,14 @@ window.addEventListener('resize', function() {
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+/*
+window.addEventListener('mousedown', function() {
+    gsap.to(cameraT.position,{
+        x: camera2.position.x,
+        y: camera2.position.y,
+        z: camera2.position.z
+        duration: 2.0
+    })
+})
+*/
