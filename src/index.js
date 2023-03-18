@@ -5,7 +5,10 @@ import 'bootstrap/dist/js/bootstrap'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 import * as dat from 'dat.gui';
+import { Camera } from 'three';
+
 
 const carts = [], carts_ipos = [];
 
@@ -18,7 +21,7 @@ let tree_z_density = 0;
 
 
 
-const canvas = document.querySelector('.webgl');
+let canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit, bounds = 2000;
 
 // models imports
@@ -320,8 +323,6 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
   }
-
-
 let thisTrack;
 
 
@@ -337,6 +338,18 @@ let currCam = camera;
 let objArray = [car2, car, train];
 let objPtr = 2;
 camera2.position.x = train.position.x;
+
+const textposition1 = new THREE.Vector3();
+const followText1 = document.getElementById('follow-text-one');
+const textposition2 = new THREE.Vector3();
+const followText2 = document.getElementById('follow-text-two');
+const textposition3 = new THREE.Vector3();
+const followText3 = document.getElementById('follow-text-three');
+
+const followTextArray = [followText1, followText2, followText3];
+
+canvas = document.querySelector('canvas');
+
 document.body.onkeydown = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||
@@ -345,9 +358,16 @@ document.body.onkeydown = function(e) {
         orbit.autoRotate = !orbit.autoRotate;
         if(orbit.autoRotate == true) {
             currCam = camera;
+            hideText(followText1);
+            hideText(followText2);
+            hideText(followText3);
         }
         if(orbit.autoRotate == false) {
+
             currCam = camera2;
+            showText(followTextArray[objPtr]);
+            
+
         } 
     }
     if(currCam == camera2) {
@@ -357,6 +377,14 @@ document.body.onkeydown = function(e) {
                 objPtr--;
                 camera2.position.x = objArray[objPtr].position.x;
             }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
+            }
         }
         // right arrow key
         if (e.keyCode == 39) {
@@ -364,9 +392,18 @@ document.body.onkeydown = function(e) {
                 objPtr++;
                 camera2.position.x = objArray[objPtr].position.x;
             }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
+            }
         }
     }
 }
+
 
 function animate(time) {
     orbit.update();
@@ -377,6 +414,9 @@ function animate(time) {
     if (cameraY <= Math.PI / 9){
         camera.position.y = Math.PI / 9;
     }
+    addFollowText(textposition1, followText1, car2, camera2, canvas);
+    addFollowText(textposition2, followText2, car, camera2, canvas);
+    addFollowText(textposition3, followText3, train, camera2, canvas);
     
     if(treeModels.length == 5){
         
