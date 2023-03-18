@@ -5,6 +5,7 @@ import 'bootstrap/dist/js/bootstrap'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 import * as dat from 'dat.gui';
 
 
@@ -16,9 +17,6 @@ import * as dat from 'dat.gui';
 
 //const canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit, canvas;
-
-canvas = document.querySelector('canvas.webgl');
-const textposition = new THREE.Vector3();
 
 // models imports
 let trainHead, tree1;
@@ -180,14 +178,38 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+canvas = document.querySelector('canvas');
+const textposition1 = new THREE.Vector3();
+const followText = document.getElementById('follow-text');
 
 function animate(time) {
     // box.rotation.x = time / 1000;
     // box.rotation.y = time / 1000;
     if(car){
-        
+        addFollowText(textposition1)
     }
     orbit.update();
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+
+function addFollowText(textposition){
+    textposition.setFromMatrixPosition(car.matrixWorld);
+    textposition.project(camera);
+    var widthHalf = canvas.width/2;
+    var heightHalf = canvas.height/2;
+    var rec = canvas.getBoundingClientRect();
+    textposition.x = rec.left +(textposition.x * widthHalf) +  widthHalf;
+    textposition.y = rec.top -(textposition.y * heightHalf) + heightHalf;
+    followText.style.top = `${textposition.y}px`;
+    followText.style.left = `${textposition.x}px`;
+}
+
+function showText() {
+    var x = document.getElementById("follow-text");
+    if (x.style.display === "none"){
+        x.style.display = "block";
+    }else{
+        x.style.display = "none";
+    }
+}

@@ -21,3 +21,14 @@ body {
     background: transparent;
     /* overflow: hidden; */
 }
+
+.button {
+    position: absolute;
+    z-index: 100;
+    font-family: Arial;
+    font-weight: bold;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
