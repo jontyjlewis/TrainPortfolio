@@ -89,9 +89,11 @@ const planeMaterial = new THREE.MeshStandardMaterial({
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(plane);
+
 plane.rotation.x = -0.5 * Math.PI;
 plane.position.y = -0.5;
 plane.receiveShadow = true;
+
 
 // Grid 
 // const gridHelper = new THREE.GridHelper(300, 50);
@@ -357,6 +359,12 @@ document.body.onkeydown = function(e) {
 
 function animate(time) {
     orbit.update();
+
+    const cameraY = camera.position.y;
+
+    if (cameraY <= Math.PI / 9){
+        camera.position.y = Math.PI / 9;
+    }
     
     if(treeModels.length == 5){
         
