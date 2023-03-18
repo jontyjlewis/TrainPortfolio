@@ -1,16 +1,119 @@
 .follow-text {
     position: absolute;
-    z-index: 100;
+    /* z-index: 100;
     font-family: Arial;
     font-weight: bold;
     font-size: 2rem;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #FCF0CC;
-    border: 3px solid black;
+    background: #d8ac26;
+    border: 3px solid black; */
     display: none;
 }
+
+.title-one {
+    position: absolute;
+    left: -450px;
+    top: -150px;
+    z-index: 100;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: bold;
+    font-variant: small-caps;
+    font-size: 2rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+}
+.members {
+    position: absolute;
+    left: -450px;
+    top: -100px;
+    z-index: 100;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 200;
+    font-size: 1.2rem;
+    font-stretch: ultra-condensed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    white-space: nowrap;
+}
+
+.intro {
+    position: absolute;
+    left: -450px;
+    top: -40px;
+    z-index: 100;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 200;
+    font-size: 1.2rem;
+    font-stretch: ultra-condensed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    /* white-space: nowrap; */
+}
+.trianpic {
+    position: absolute;
+    left: 40px;
+    top: -40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+    max-height: 220px;
+}
+
+.title-two {
+    position: absolute;
+    left: -450px;
+    top: -150px;
+    z-index: 100;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: bold;
+    font-variant: small-caps;
+    font-size: 2rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+}
+.threelogo {
+    position: absolute;
+    left: -250px;
+    top: -40px;
+    padding: 5px;
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+    max-height: 220px;
+}
+
+.blenderlogo {
+    position: absolute;
+    left: -50px;
+    top: -40px;
+    padding: 5px;
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+    max-height: 220px;
+}
+
 body {
     margin: 0 auto 80px;
     margin-top: 0px;

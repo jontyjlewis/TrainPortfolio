@@ -11,7 +11,7 @@ function addFollowText(textposition, followText, car, camera, canvas){
 }
 
 function showText(followText) {
-    followText.style.display = "block"
+    followText.style.display = "inline-block"
 }
 
 function hideText(followText){

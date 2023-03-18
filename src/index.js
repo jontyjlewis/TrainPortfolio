@@ -332,6 +332,9 @@ const textposition2 = new THREE.Vector3();
 const followText2 = document.getElementById('follow-text-two');
 const textposition3 = new THREE.Vector3();
 const followText3 = document.getElementById('follow-text-three');
+
+const followTextArray = [followText1, followText2, followText3];
+
 canvas = document.querySelector('canvas');
 
 document.body.onkeydown = function(e) {
@@ -349,9 +352,8 @@ document.body.onkeydown = function(e) {
         if(orbit.autoRotate == false) {
 
             currCam = camera2;
-            showText(followText1);
-            showText(followText2);
-            showText(followText3);
+            showText(followTextArray[objPtr]);
+            
 
         } 
     }
@@ -362,12 +364,28 @@ document.body.onkeydown = function(e) {
                 objPtr--;
                 camera2.position.x = objArray[objPtr].position.x;
             }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
+            }
         }
         // right arrow key
         if (e.keyCode == 39) {
             if(objPtr < objArray.length) {
                 objPtr++;
                 camera2.position.x = objArray[objPtr].position.x;
+            }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
             }
         }
     }
