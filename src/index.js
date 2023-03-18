@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 import * as dat from 'dat.gui';
+import { Camera } from 'three';
+
 
 const carts = [], carts_ipos = [];
 
@@ -19,7 +21,7 @@ let tree_z_density = 0;
 
 
 
-const canvas = document.querySelector('.webgl');
+let canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit, bounds = 2000;
 
 // models imports
@@ -325,17 +327,26 @@ let currCam = camera;
 let objArray = [car2, car, train];
 let objPtr = 2;
 camera2.position.x = train.position.x;
+
+const textposition1 = new THREE.Vector3();
+const followText1 = document.getElementById('follow-text');
+canvas = document.querySelector('canvas');
+
 document.body.onkeydown = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||
         e.keyCode == 32
     ) {
+        
         orbit.autoRotate = !orbit.autoRotate;
         if(orbit.autoRotate == true) {
             currCam = camera;
+            hideText(followText1);
         }
         if(orbit.autoRotate == false) {
+
             currCam = camera2;
+            showText(followText1);
         } 
     }
     if(currCam == camera2) {
@@ -356,8 +367,10 @@ document.body.onkeydown = function(e) {
     }
 }
 
+
 function animate(time) {
     orbit.update();
+    addFollowText(textposition1, followText1, car, camera2, canvas);
     
     if(treeModels.length == 5){
         
@@ -373,12 +386,8 @@ function animate(time) {
             thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
             trainTracks.children.pop();
             trainTracks.children.unshift(thisTrack);
-            
            }
        }
-       
-       
-
     }
     renderer.render(scene, currCam);
 }

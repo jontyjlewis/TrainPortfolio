@@ -10,6 +10,7 @@
     justify-content: center;
     background: #FCF0CC;
     border: 3px solid black;
+    display: none;
 }
 body {
     margin: 0 auto 80px;
