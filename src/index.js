@@ -360,8 +360,9 @@ document.body.onkeydown = function(e) {
 function animate(time) {
     orbit.update();
 
+    // giving position-limit to the free-view camera
     const cameraY = camera.position.y;
-
+    // <= 20 degree
     if (cameraY <= Math.PI / 9){
         camera.position.y = Math.PI / 9;
     }
