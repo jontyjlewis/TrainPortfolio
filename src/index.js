@@ -9,22 +9,24 @@ import * as dat from 'dat.gui';
 
 const carts = [], carts_ipos = [];
 
-let panSpeed = 1;
+const mixers = [];
+let panSpeed = .5;
 let moveSpeed = 1;
 let first_random = 0;
-let tree_x_density = 0;
-let tree_z_density = 0;
-
+let tree_x_density = 100;
+let tree_z_density = 100;
 
 
 
 const canvas = document.querySelector('.webgl');
-let scene, camera, renderer, orbit, bounds = 2000;
+let scene, camera, renderer, orbit, bounds = 1000;
 
 // models imports
 let trainHead_src, trainTracks_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
-trainHead_src = require('../assets/TrainHeadLit.glb');
+trainHead_src = require('../assets/TrainHeadUnlit.glb');
 trainTracks_src = require('../assets/TrainTracks.glb');
+Cart1_src = require('../assets/Cart1.glb');
+Cart2_src = require('../assets/Cart2.glb');
 tree1_src = require('../assets/Tree1.glb');
 tree2_src = require('../assets/Tree2.glb');
 tree3_src = require('../assets/Tree3.glb');
@@ -36,7 +38,7 @@ tree5_src = require('../assets/Tree5.glb');
 scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88dcf4);
 
-renderer = new THREE.WebGLRenderer();
+renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -101,6 +103,7 @@ plane.receiveShadow = true;
 // Train Front
 const loader = new GLTFLoader();
 // Loading models
+let trainHead;
 // Train Head
 let treeModels = [];
 loader.load( trainHead_src, function ( gltf ) {
@@ -108,10 +111,10 @@ loader.load( trainHead_src, function ( gltf ) {
     model.children[0].material.color.r = 2;
     model.children[0].material.color.g = 2;
     model.children[0].material.color.b = 2;
-    scene.add(model);
-    model.position.set(-73, 2.5, 0);
+    model.position.set(-75, 2.5, 0);
     model.children[0].castShadow = true;
-    model.children[0].rotateY(-3.14159/2);
+    trainHead = model;
+    scene.add(trainHead);
 
 }, undefined, function ( error ) {
 	console.error( error );
@@ -127,6 +130,7 @@ loader.load( trainTracks_src, function ( gltf ) {
     scene.add(model);
     model.position.set(0, 0, 0);
     model.children[0].castShadow = true;
+    model.children[0].receiveShadow = true;
     model.children[0].rotateZ(-3.14159/2);
     trainTracks = model;
     for(var i = 1, dist = -30, modelWidth = 120, multiplier = 1; i < 40 ; i++){
@@ -144,7 +148,52 @@ loader.load( trainTracks_src, function ( gltf ) {
 	console.error( error );
 });
 
+// car2
+let testAction;
+let car2;
+loader.load( Cart2_src, function ( gltf ) {
+    const model = gltf.scene;
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+    model.position.set(-35, 2.1, 2.85);    
+    let mixer2 = new THREE.AnimationMixer(model);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    console.log(clip);
+    const action = mixer2.clipAction(clip);
+    testAction = action;
+    testAction.play();
+    model.children[0].children[0].castShadow = true;
+    scene.add(model);
+    mixers.push(mixer2);
+    car2 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
 
+// car
+let car;
+loader.load( Cart1_src, function ( gltf ) {
+    const model = gltf.scene;
+    scene.add(model);
+    model.position.set(5.3, 2.1, 2.85);
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    const clips = gltf.animations;
+    let mixer = new THREE.AnimationMixer(model);
+    console.log(gltf.animations)
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    action.play();
+    mixers.push(mixer);
+    car = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
 
 // Environment Models
 // Tree1
@@ -218,40 +267,42 @@ train.position.set(32, 8.5, 0);
 train.castShadow = true;
 
 // Train Car / Box
-const carGeometry = new THREE.BoxGeometry(30, 10, 12);
-const carMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe50505,
-    visible: true
-});
-const car = new THREE.Mesh(carGeometry, carMaterial);
-scene.add(car);
-car.position.set(0, 8.5, 0);
-car.castShadow = true;
+// const carGeometry = new THREE.BoxGeometry(30, 10, 12);
+// const carMaterial = new THREE.MeshStandardMaterial({
+ //   color: 0xe50505,
+//    visible: true
+// });
+// const car = new THREE.Mesh(carGeometry, carMaterial);
+// scene.add(car);
+// car.position.set(0, 8.5, 0);
+// car.castShadow = true;
 
 // Train Car2 / Box 
-const car2Geometry = new THREE.BoxGeometry(30, 10, 12);
-const car2Material = new THREE.MeshStandardMaterial({
-    color: 0x193569,
-    visible: true
-});
-const car2 = new THREE.Mesh(car2Geometry, car2Material);
-scene.add(car2);
-car2.position.set(-35, 8.5, 0);
-car2.castShadow = true;
+// const car2Geometry = new THREE.BoxGeometry(30, 10, 12);
+// const car2Material = new THREE.MeshStandardMaterial({
+//     color: 0x193569,
+//     visible: true
+// });
+// const car2 = new THREE.Mesh(car2Geometry, car2Material);
+// scene.add(car2);
+// car2.position.set(-35, 8.5, 0);
+// car2.castShadow = true;
 
 // Directional Light
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
-directionalLight.position.set(-100, 100, 100);
+directionalLight.position.set(-100, 80, 100);
 directionalLight.castShadow = true;
 directionalLight.shadow.camera.bottom = -200;
 directionalLight.shadow.camera.top = 200;
 directionalLight.shadow.camera.left = -200;
 directionalLight.shadow.camera.right = 200;
 
+directionalLight.shadow.bias = -0.0003;
 directionalLight.shadow.mapSize.width = shadowMapSize.width;
 directionalLight.shadow.mapSize.height = shadowMapSize.height;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 
 // Helpers (adds guide lines)
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
@@ -263,7 +314,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const ambientLight = new THREE.AmbientLight(0x442222, 1.6);
 scene.add(ambientLight);
 
-scene.fog = new THREE.FogExp2(0x88dcf4, 0.0005);
+scene.fog = new THREE.FogExp2(0x88dcf4, 0.001);
 
 // BG
 renderer.setClearColor(0x8bb7ed);
@@ -271,35 +322,52 @@ renderer.setClearColor(0x8bb7ed);
 // GUI
 const gui = new dat.GUI();
 
-const options = {
-    car1Color: '#e50505',
-    visible: true,
-    car2Color: '#193569',
-    visible: true
+var options = {
+    // car1Color: '#e50505',
+    // visible: true,
+    speed: .5
+    //car2Color: '#193569',
+    //visible: true
 };
-gui.addColor(options, 'car1Color').onChange(function(e) {
-    car.material.color.set(e);
-});
-gui.add(options, 'visible').onChange(function(e) {
-    car.material.visible = e;
-});
-gui.addColor(options, 'car2Color').onChange(function(e) {
-    car2.material.color.set(e);
-});
-gui.add(options, 'visible').onChange(function(e) {
-    car2.material.visible = e;
-});
+//gui.addColor(options, 'car1Color').onChange(function(e) {
+//    car.material.color.set(e);
+//});
+//gui.add(options, 'visible').onChange(function(e) {
+//    car.material.visible = e;
+//});
+gui.add(options, 'speed' , -.5, 2, .05).name("Speed").onChange(function(e) {
+    panSpeed = e;
+}); 
+//gui.addColor(options, 'car2Color').onChange(function(e) {
+//    car2.material.color.set(e);
+//});
+//gui.add(options, 'visible').onChange(function(e) {
+//    car2.material.visible = e;
+//});
 
-
+let backgroundModels = new THREE.Group;
 function randomizeTrees(){
     if(!first_random){
-        treeModels.forEach((element) => {
-            scene.add(element);
-            element.position.x = getRandomInt(-120, 120);
-            element.position.z = getRandomInt(-10, -100);
-        });
-        first_random = 1;
+        let bufferx = 2*bounds/tree_x_density;
+        let bufferz = 2*bounds/tree_z_density;
+        console.log("2 * " + bounds + " / " + tree_x_density +"=" + 2*bounds/tree_x_density);
+        for(let pos_x = -bounds; pos_x <= bounds; pos_x += (2*bounds/tree_x_density)){
+            for(let pos_z = -bounds; pos_z <= bounds; pos_z += (2*bounds/tree_z_density)){
+                if(-50 < pos_z  && pos_z < 50) continue;
+                let this_tree = treeModels[getRandomInt(0,4)].clone();
+                console.log(tree_x_density);
+                this_tree.position.x = pos_x + (getRandomInt(10*-bufferx,10*bufferx)/25);
+                this_tree.position.z = pos_z + (getRandomInt(10*-bufferz,10*bufferz)/25);
+                this_tree.rotateZ = getRandomInt(0,2*3.14159);
+                this_tree.scale.set(2,2,2);
+                scene.add(this_tree);
+                backgroundModels.children.push(this_tree);
+                
+            }
+        }
+        first_random = true;
     }
+    objArray = [trainHead, car2, car, train];
 }
 
 function getRandomInt(min, max) {
@@ -355,20 +423,33 @@ document.body.onkeydown = function(e) {
     }
 }
 
+
+const clock = new THREE.Clock();
 function animate(time) {
     orbit.update();
+    if(mixers.length>1){
+        //for( let i = 0; i < mixers.length-1; i ++){
+            mixers[0].update(clock.getDelta());
+            mixers[0].timeScale = 10*panSpeed;
+            mixers[1].update(clock.getDelta());
+            mixers[1].timeScale = 10*panSpeed;
+            //mixer.update(clock.getDelta());
+            //mixer.timeScale = 10*panSpeed;
+            //console.log(mixers)
+            //console.log(scene)
+        //}
+    }
     
+//testAction.timeScale = 10*panSpeed;// if you need this, you will need to do more work with an array
     if(treeModels.length == 5){
         
        randomizeTrees(); 
-       treeModels.forEach((element) => element.position.x += panSpeed);
+       //treeModels.forEach((element) => element.position.x += panSpeed);
        
        if(trainTracks != null) {
            trainTracks.position.x += panSpeed;
            thisTrack = trainTracks.children[trainTracks.children.length-1];
-           console.log(thisTrack.position.x + trainTracks.position.x);
            if(thisTrack.position.x + trainTracks.position.x > bounds){
-            console.log("hit");
             thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
             trainTracks.children.pop();
             trainTracks.children.unshift(thisTrack);
@@ -376,8 +457,6 @@ function animate(time) {
            }
        }
        
-       
-
     }
     renderer.render(scene, currCam);
 }
