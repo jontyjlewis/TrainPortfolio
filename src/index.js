@@ -6,6 +6,8 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
+import { TweenMax } from "gsap";  // If error, npm i gsap
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 
 const carts = [], carts_ipos = [];
 
@@ -19,7 +21,7 @@ let tree_z_density = 0;
 
 
 const canvas = document.querySelector('.webgl');
-let scene, camera, renderer, orbit, bounds = 2000;
+let scene, camera1, renderer, orbit, bounds = 2000;
 
 // models imports
 let trainHead_src, trainTracks_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
@@ -41,16 +43,16 @@ renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Scene Camera
-camera = new THREE.PerspectiveCamera(
+// Scene Cameras
+camera1 = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
     0.1,
     10000
 );
-scene.add(camera);
-camera.position.set(50, 50, 70);
-camera.lookAt(0, 0, 0);
+scene.add(camera1);
+camera1.position.set(50, 50, 70);
+camera1.lookAt(0, 0, 0);
 
 const camera2 = new THREE.PerspectiveCamera(
     75,
@@ -62,7 +64,7 @@ scene.add(camera2);
 camera2.position.set(0, 8, 20);
 
 // ORBIT CONTROL STUFF
-orbit = new OrbitControls(camera, renderer.domElement);
+orbit = new OrbitControls(camera1, renderer.domElement);
 orbit.autoRotate = true;
 orbit.autoRotateSpeed = 0.7;
 orbit.enableDamping = true;
@@ -320,42 +322,113 @@ let thisTrack;
 //     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
 // });
 
-let currCam = camera;
+
+
+let currCam = camera1;
 let objArray = [car2, car, train];
 let objPtr = 2;
 camera2.position.x = train.position.x;
+var animationDuration = 1;
+
+// Pressing SPACEBAR
 document.body.onkeydown = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||
         e.keyCode == 32
     ) {
         orbit.autoRotate = !orbit.autoRotate;
-        if(orbit.autoRotate == true) {
-            currCam = camera;
-        }
-        if(orbit.autoRotate == false) {
-            currCam = camera2;
-        } 
+        // if(!orbit.autoRotate) {
+        //     orbit.enabled = false;
+        // }
+        // if(orbit.autoRotate) {
+        //     orbit.enabled = true;
+        // }
+        switchCamera();
     }
     if(currCam == camera2) {
         // left arrow key
         if (e.keyCode == 37) {
             if(objPtr > 0) {
                 objPtr--;
-                camera2.position.x = objArray[objPtr].position.x;
+                // camera2.position.x = objArray[objPtr].position.x;
+                gsap.to(camera2.position, {
+                    x: objArray[objPtr].position.x,
+                    duration: animationDuration,
+                    ease: "power2.inOut",
+                    onUpdate: function() {
+                        camera2.position.setX(camera2.position.x);
+                    }
+                });
             }
         }
         // right arrow key
         if (e.keyCode == 39) {
-            if(objPtr < objArray.length) {
+            if(objPtr < objArray.length - 1) {
                 objPtr++;
-                camera2.position.x = objArray[objPtr].position.x;
+                // camera2.position.x = objArray[objPtr].position.x;
+                gsap.to(camera2.position, {
+                    x: objArray[objPtr].position.x,
+                    duration: animationDuration,
+                    ease: "power2.inOut",
+                    onUpdate: function() {
+                        camera2.position.setX(camera2.position.x);
+                    }
+                });
             }
         }
     }
 }
 
-function animate(time) {
+var camera1OriginalPosition = camera1.position.clone();
+var camera1OriginalRotation = camera1.rotation.clone();
+var camera2OriginalPosition = camera2.position.clone();
+var camera2OriginalRotation = camera2.rotation.clone();
+
+function switchCamera() {
+    // var camera1OriginalPosition = camera1.position.clone();
+    // var camera1OriginalRotation = camera1.rotation.clone();
+    // var camera2OriginalPosition = camera2.position.clone();
+    // var camera2OriginalRotation = camera2.rotation.clone();
+
+    var oldCam = currCam === camera1 ? camera1 : camera2;
+    var newCam = currCam === camera1 ? camera2 : camera1;
+
+    currCam = newCam;
+
+    // gsap.to(oldCam.position, {
+    //     x: newCam.position.x,
+    //     y: newCam.position.y,
+    //     z: newCam.position.z,
+    //     duration: animationDuration,
+    //     onUpdate: function() {
+    //         // update the camera positions every frame
+    //         oldCam.position.set(oldCam.position.x, oldCam.position.y, oldCam.position.z);
+    //         newCam.position.set(newCam.position.x, newCam.position.y, newCam.position.z);
+    //     },
+    //     onComplete: function() {
+    //         if (oldCam === camera1) {
+    //             oldCam.position.copy(camera1OriginalPosition);
+    //             oldCam.rotation.copy(camera1OriginalRotation);
+    //         } else {
+    //             oldCam.position.copy(camera2OriginalPosition);
+    //             oldCam.rotation.copy(camera2OriginalRotation);
+    //         }
+    //     }
+    // });
+    // gsap.to(oldCam.rotation, {
+    //     x: newCam.rotation.x,
+    //     y: newCam.rotation.y,
+    //     z: newCam.rotation.z,
+    //     duration: animationDuration,
+    //     onUpdate: function() {
+    //         oldCam.rotation.set(oldCam.rotation.x, oldCam.rotation.y, oldCam.rotation.z);
+    //         newCam.rotation.set(newCam.rotation.x, newCam.rotation.y, newCam.rotation.z);
+    //     }
+    // });
+}
+
+
+function animate() {
     orbit.update();
     
     if(treeModels.length == 5){
@@ -376,9 +449,18 @@ function animate(time) {
            }
        }
        
-       
-
     }
+    // camera transition stuff
+    // var elapasedTIme = (performance.now() - transitionStartTime) / 1000;
+
+    // var progress = Math.min(elapasedTIme / transitionDuration, 1);
+
+    // var newPosition = new THREE.Vector3().lerpVectors(currCam.position, currCam == camera1 ? camera2.position : camera1.position, progress);
+    // var newRotation = new THREE.Quaternion().slerpQuaternions(currCam.quaternion, currCam == camera1 ? camera2.quaternion : camera1.quaternion, progress);
+
+    // currCam.position.copy(newPosition);
+    // currCam.quaternion.copy(newRotation);
+
     renderer.render(scene, currCam);
 }
 renderer.setAnimationLoop(animate);
@@ -414,9 +496,9 @@ function onDocumentKeyDown(event) {
 
 // Allows the window to resize/scale as needed
 window.addEventListener('resize', function() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera1.aspect = window.innerWidth / window.innerHeight;
     camera2.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    camera1.updateProjectionMatrix();
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
