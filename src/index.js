@@ -292,6 +292,15 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
+// making camera zoom for gui
+var changeCameraButton = {
+    onClick: function() {
+        orbit.autoRotate = !orbit.autoRotate;
+        switchCamera();
+    }
+};
+gui.add(changeCameraButton, 'onClick').name('Change Camera');
+
 
 function randomizeTrees(){
     if(!first_random){
@@ -379,52 +388,11 @@ document.body.onkeydown = function(e) {
     }
 }
 
-var camera1OriginalPosition = camera1.position.clone();
-var camera1OriginalRotation = camera1.rotation.clone();
-var camera2OriginalPosition = camera2.position.clone();
-var camera2OriginalRotation = camera2.rotation.clone();
-
 function switchCamera() {
-    // var camera1OriginalPosition = camera1.position.clone();
-    // var camera1OriginalRotation = camera1.rotation.clone();
-    // var camera2OriginalPosition = camera2.position.clone();
-    // var camera2OriginalRotation = camera2.rotation.clone();
-
-    var oldCam = currCam === camera1 ? camera1 : camera2;
+    // var oldCam = currCam === camera1 ? camera1 : camera2;
     var newCam = currCam === camera1 ? camera2 : camera1;
 
     currCam = newCam;
-
-    // gsap.to(oldCam.position, {
-    //     x: newCam.position.x,
-    //     y: newCam.position.y,
-    //     z: newCam.position.z,
-    //     duration: animationDuration,
-    //     onUpdate: function() {
-    //         // update the camera positions every frame
-    //         oldCam.position.set(oldCam.position.x, oldCam.position.y, oldCam.position.z);
-    //         newCam.position.set(newCam.position.x, newCam.position.y, newCam.position.z);
-    //     },
-    //     onComplete: function() {
-    //         if (oldCam === camera1) {
-    //             oldCam.position.copy(camera1OriginalPosition);
-    //             oldCam.rotation.copy(camera1OriginalRotation);
-    //         } else {
-    //             oldCam.position.copy(camera2OriginalPosition);
-    //             oldCam.rotation.copy(camera2OriginalRotation);
-    //         }
-    //     }
-    // });
-    // gsap.to(oldCam.rotation, {
-    //     x: newCam.rotation.x,
-    //     y: newCam.rotation.y,
-    //     z: newCam.rotation.z,
-    //     duration: animationDuration,
-    //     onUpdate: function() {
-    //         oldCam.rotation.set(oldCam.rotation.x, oldCam.rotation.y, oldCam.rotation.z);
-    //         newCam.rotation.set(newCam.rotation.x, newCam.rotation.y, newCam.rotation.z);
-    //     }
-    // });
 }
 
 
