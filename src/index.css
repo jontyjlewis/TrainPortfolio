@@ -1,3 +1,5 @@
+
+/* copy */
 .follow-text {
     position: absolute;
     /* z-index: 100;
@@ -10,7 +12,7 @@
     background: #d8ac26;
     border: 3px solid black; */
     display: none;
-    resize: both;
+    text-shadow: 5px 4px 4px #1C1C1C;
 }
 
 .title-one {
@@ -29,6 +31,8 @@
     background: none;
     border: none;
 }
+/* Copy */
+
 .members {
     position: absolute;
     left: -450px;
@@ -64,6 +68,7 @@
     border: none;
     /* white-space: nowrap; */
 }
+
 .trianpic {
     position: absolute;
     left: 40px;
@@ -108,6 +113,52 @@
     position: absolute;
     left: -50px;
     top: -40px;
+    padding: 5px;
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+    max-height: 220px;
+}
+
+.collaborator{
+    position: absolute;
+    white-space: nowrap;
+    left: -100px;
+    top: -130px;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 150;
+    font-size: 1.2rem;
+    position: absolute;
+    margin-left: 200px;
+}
+.box{
+    left: -450px;
+    top: -100px;
+    position: absolute;
+    width: 900px;
+    height: 2px;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+.explain{
+    top: -40px;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 150;
+    font-size: 1.2rem;
+    position: absolute;
+    margin-left: 80px;
+    width: 400px;
+    border: 1px solid;
+    word-wrap: break-word; 
+}
+.stPic {
+    position: absolute;
+    left: -450px;
+    top: -65px;
     padding: 5px;
     height: auto; 
     width: auto; 
