@@ -63,6 +63,17 @@ const camera2 = new THREE.PerspectiveCamera(
 scene.add(camera2);
 camera2.position.set(0, 8, 20);
 
+/*
+const cameraT = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+scene.add(cameraT);
+cameraT.position.set(0, 8, 20);
+*/
+
 // ORBIT CONTROL STUFF
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.autoRotate = true;
@@ -91,9 +102,11 @@ const planeMaterial = new THREE.MeshStandardMaterial({
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(plane);
+
 plane.rotation.x = -0.5 * Math.PI;
 plane.position.y = -0.5;
 plane.receiveShadow = true;
+
 
 // Grid 
 // const gridHelper = new THREE.GridHelper(300, 50);
@@ -393,6 +406,13 @@ document.body.onkeydown = function(e) {
 
 function animate(time) {
     orbit.update();
+
+    // giving position-limit to the free-view camera
+    const cameraY = camera.position.y;
+    // <= 20 degree
+    if (cameraY <= Math.PI / 9){
+        camera.position.y = Math.PI / 9;
+    }
     addFollowText(textposition1, followText1, car2, camera2, canvas);
     addFollowText(textposition2, followText2, car, camera2, canvas);
     addFollowText(textposition3, followText3, train, camera2, canvas);
@@ -424,7 +444,6 @@ function resetCarts(){
         carts[i].position.x = carts_ipos[i].x;
         carts[i].position.y = carts_ipos[i].y;
         carts[i].position.z = carts_ipos[i].z;
-        
     }
 }*/
 
@@ -455,3 +474,14 @@ window.addEventListener('resize', function() {
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+/*
+window.addEventListener('mousedown', function() {
+    gsap.to(cameraT.position,{
+        x: camera2.position.x,
+        y: camera2.position.y,
+        z: camera2.position.z
+        duration: 2.0
+    })
+})
+*/
