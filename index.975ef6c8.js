@@ -627,7 +627,7 @@ manager.onError = function(url) {
 };
 let scene, camera, renderer, orbit, bounds = 600;
 // models imports
-let trainHead_src, trainTracks_src, Cart1_src, Cart2_src, Cart3_src, Cart4_src, Cart5_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
+let trainHead_src, trainTracks_src, Cart1_src, Cart2_src, Cart3_src, Cart4_src, Cart5_src, tree1_src;
 trainHead_src = require("52c9619912820f0");
 trainTracks_src = require("baea7093f17793ec");
 let thumbnail1_src = require("10a58529d2708d17");
@@ -641,10 +641,6 @@ Cart3_src = require("c40386b98d6144a");
 Cart4_src = require("f3cfe9a6df9fd1cf");
 Cart5_src = require("37fb5e34d764a02");
 tree1_src = require("a575c19b29db37e6");
-tree2_src = require("4bb89229c28c9bc1");
-tree3_src = require("73630cd3d78e02e6");
-tree4_src = require("2bc009c52463e11");
-tree5_src = require("3d7937bc986e358c");
 // Scene Setup
 scene = new _three.Scene();
 scene.background = new _three.Color(0x88dcf4);
@@ -1210,7 +1206,7 @@ window.addEventListener('mousedown', function() {
 })
 */ 
 
-},{"jquery":"hgMhh","popper.js":"dj939","bootstrap/dist/css/bootstrap.min.css":"i5LP7","bootstrap/dist/js/bootstrap":"9AxfY","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","three/examples/jsm/renderers/CSS2DRenderer":"3tWLO","dat.gui":"k3xQk","baea7093f17793ec":"f93iO","eee4944ce3986f57":"5uyty","3f3870993b0f15bf":"ie66X","c40386b98d6144a":"cUken","f3cfe9a6df9fd1cf":"cASCU","37fb5e34d764a02":"c6yTU","a575c19b29db37e6":"lSikR","4bb89229c28c9bc1":"6NtJ3","73630cd3d78e02e6":"1sRBd","2bc009c52463e11":"k0BFh","3d7937bc986e358c":"5x2Dg","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","10a58529d2708d17":"782RA","8469e4337cb4db14":"6Pe52","3a76db77870948cd":"1Dh76","e315b4ae0fde76da":"ar2w4","ca9cda485e02b56f":"aD7OJ","52c9619912820f0":"eDt74"}],"hgMhh":[function(require,module,exports) {
+},{"jquery":"hgMhh","popper.js":"dj939","bootstrap/dist/css/bootstrap.min.css":"i5LP7","bootstrap/dist/js/bootstrap":"9AxfY","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","three/examples/jsm/renderers/CSS2DRenderer":"3tWLO","dat.gui":"k3xQk","baea7093f17793ec":"f93iO","eee4944ce3986f57":"5uyty","3f3870993b0f15bf":"ie66X","c40386b98d6144a":"cUken","f3cfe9a6df9fd1cf":"cASCU","37fb5e34d764a02":"c6yTU","a575c19b29db37e6":"lSikR","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","10a58529d2708d17":"782RA","8469e4337cb4db14":"6Pe52","3a76db77870948cd":"1Dh76","e315b4ae0fde76da":"ar2w4","ca9cda485e02b56f":"aD7OJ","52c9619912820f0":"eDt74"}],"hgMhh":[function(require,module,exports) {
 /*!
  * jQuery JavaScript Library v3.6.4
  * https://jquery.com/
@@ -51360,19 +51356,7 @@ module.exports = require("c786b01513feb29d").getBundleURL("bLxZJ") + "Cart5.c1c0
 },{"c786b01513feb29d":"lgJ39"}],"lSikR":[function(require,module,exports) {
 module.exports = require("9653ddfcab6e1b06").getBundleURL("bLxZJ") + "Tree1.74b49395.glb" + "?" + Date.now();
 
-},{"9653ddfcab6e1b06":"lgJ39"}],"6NtJ3":[function(require,module,exports) {
-module.exports = require("ceb702d171bfca41").getBundleURL("bLxZJ") + "Tree2.c78c0f10.glb" + "?" + Date.now();
-
-},{"ceb702d171bfca41":"lgJ39"}],"1sRBd":[function(require,module,exports) {
-module.exports = require("b90ec7e1be40129c").getBundleURL("bLxZJ") + "Tree3.53f93e16.glb" + "?" + Date.now();
-
-},{"b90ec7e1be40129c":"lgJ39"}],"k0BFh":[function(require,module,exports) {
-module.exports = require("fe36538865f14d5f").getBundleURL("bLxZJ") + "Tree4.2e89e02e.glb" + "?" + Date.now();
-
-},{"fe36538865f14d5f":"lgJ39"}],"5x2Dg":[function(require,module,exports) {
-module.exports = require("117a90d56b2934bf").getBundleURL("bLxZJ") + "Tree5.3f2e18db.glb" + "?" + Date.now();
-
-},{"117a90d56b2934bf":"lgJ39"}],"782RA":[function(require,module,exports) {
+},{"9653ddfcab6e1b06":"lgJ39"}],"782RA":[function(require,module,exports) {
 module.exports = require("85186876ca36db1d").getBundleURL("bLxZJ") + "ThumbnailTitle.7c7a04f3.glb" + "?" + Date.now();
 
 },{"85186876ca36db1d":"lgJ39"}],"6Pe52":[function(require,module,exports) {
