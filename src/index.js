@@ -187,25 +187,128 @@ gui.add(options, 'visible').onChange(function(e) {
     car2.material.visible = e;
 });
 
-/*
-let z;
-const zF = 200;*/
-window.addEventListener('mousedown', function(){
-    // z = camera.position.z;
-    gsap.to(camera.position,{
-        z: 200,
-        duration: 2,
-    })
-});
+
+function randomizeTrees(){
+    if(!first_random){
+        treeModels.forEach((element) => {
+            scene.add(element);
+            element.position.x = getRandomInt(-120, 120);
+            element.position.z = getRandomInt(-10, -100);
+        });
+        first_random = 1;
+    }
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  }
+let thisTrack;
+
+
+// STUFF FOR MOUSE SELECTION BUT NOT WORKING CUZ OF RAYCASTER THINGY
+// const mousePosition = new THREE.Vector2();
+
+// window.addEventListener('mousemove', function(e) {
+//     mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+//     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+// });
+
+let currCam = camera;
+let objArray = [car2, car, train];
+let objPtr = 2;
+camera2.position.x = train.position.x;
+
+const textposition1 = new THREE.Vector3();
+const followText1 = document.getElementById('follow-text-one');
+const textposition2 = new THREE.Vector3();
+const followText2 = document.getElementById('follow-text-two');
+const textposition3 = new THREE.Vector3();
+const followText3 = document.getElementById('follow-text-three');
+
+const followTextArray = [followText1, followText2, followText3];
+
+canvas = document.querySelector('canvas');
+
+document.body.onkeydown = function(e) {
+    if (e.key == " " ||
+        e.code == "Space" ||
+        e.keyCode == 32
+    ) {
+        orbit.autoRotate = !orbit.autoRotate;
+        if(orbit.autoRotate == true) {
+            currCam = camera;
+            hideText(followText1);
+            hideText(followText2);
+            hideText(followText3);
+        }
+        if(orbit.autoRotate == false) {
+
+            currCam = camera2;
+            showText(followTextArray[objPtr]);
+            
+
+        } 
+    }
+    if(currCam == camera2) {
+        // left arrow key
+        if (e.keyCode == 37) {
+            if(objPtr > 0) {
+                objPtr--;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
+            }
+        }
+        // right arrow key
+        if (e.keyCode == 39) {
+            if(objPtr < objArray.length) {
+                objPtr++;
+                camera2.position.x = objArray[objPtr].position.x;
+            }
+            for (let i = 0; i < followTextArray.length; i++){
+                if (i == objPtr){
+                    showText(followTextArray[i]);
+                }
+                else{
+                    hideText(followTextArray[i]);
+                }
+            }
+        }
+    }
+}
+
 
 function animate(time) {
-    // box.rotation.x = time / 1000;
-    // box.rotation.y = time / 1000;
-
-    // z += 1;
-    // if (z < zF)
-    //     camera.position.z = z;
-
-    renderer.render(scene, camera);
+    orbit.update();
+    addFollowText(textposition1, followText1, car2, camera2, canvas);
+    addFollowText(textposition2, followText2, car, camera2, canvas);
+    addFollowText(textposition3, followText3, train, camera2, canvas);
+    
+    if(treeModels.length == 5){
+        
+       randomizeTrees(); 
+       treeModels.forEach((element) => element.position.x += panSpeed);
+       
+       if(trainTracks != null) {
+           trainTracks.position.x += panSpeed;
+           thisTrack = trainTracks.children[trainTracks.children.length-1];
+           console.log(thisTrack.position.x + trainTracks.position.x);
+           if(thisTrack.position.x + trainTracks.position.x > bounds){
+            console.log("hit");
+            thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
+            trainTracks.children.pop();
+            trainTracks.children.unshift(thisTrack);
+           }
+       }
+    }
+    renderer.render(scene, currCam);
 }
 renderer.setAnimationLoop(animate);
