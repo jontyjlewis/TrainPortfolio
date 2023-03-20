@@ -20,6 +20,7 @@ let objArray = [];
 let first_random = 0;
 let tree_x_density = 50;
 let tree_z_density = 50;
+let Thumbnails = [];
 
 let loadingScreen = {
     scene: new THREE.Scene(),
@@ -57,8 +58,14 @@ manager.onLoad = function ( ) {
         console.log("train");
         objArray = [trainHead, car, car2, car3, car4, car5];
         hideText(followTextArray[1]);
+        Thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5];
+        for(let i = 0; i < followTextArray.length; i++){
+            hideText(followTextArray[i]);
+        }
+
     }
     RESOURCES_LOADED = true;
+    
     
 
 };
@@ -84,6 +91,10 @@ let scene, camera, renderer, orbit, bounds = 1000;
 let trainHead_src, trainTracks_src, Cart1_src, Cart2_src, Cart3_src, Cart4_src, Cart5_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
 trainHead_src = require('../assets/TrainHeadUnlit.glb');
 trainTracks_src = require('../assets/TrainTracks.glb');
+let thumbnail1_src = require('../assets/JontyThumbnail.glb');
+// thumbnail1_src = require('../assets/JontyThumbnail.glb');
+// thumbnail1_src = require('../assets/JontyThumbnail.glb');
+
 Cart1_src = require('../assets/Cart1.glb');
 Cart2_src = require('../assets/Cart2.glb');
 Cart3_src = require('../assets/Cart3.glb');
@@ -225,8 +236,19 @@ loader.load( trainTracks_src, function ( gltf ) {
 });
 
 
-//////// Thumbnail imports ////////////
+// Import thumbnail1
 
+let thumbnail1;
+loader.load( thumbnail1_src, function ( gltf ) {
+    
+    const model = gltf.scene;
+    
+    model.position.set(-35, 2.7, 3.1);   
+    thumbnail1 = model;
+    scene.add(thumbnail1);
+}, undefined, function ( error ) {
+	console.error( error );
+});
 
 
 // car
@@ -241,6 +263,8 @@ loader.load( Cart1_src, function ( gltf ) {
     model.children[0].children[0].material.metalness = 0.5; 
     model.children[0].children[0].castShadow = true;
     model.children[0].children[0].receiveShadow = true;
+
+    
     
     const clips = gltf.animations;
     const mixer = new THREE.AnimationMixer(model);
@@ -252,6 +276,20 @@ loader.load( Cart1_src, function ( gltf ) {
     
     scene.add(model);
     car = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+// Import thumbnail2
+
+let thumbnail2;
+loader.load( thumbnail1_src, function ( gltf ) {
+    
+    const model = gltf.scene;
+    
+    model.position.set(5.3, 2.7, 3.1);
+    thumbnail2 = model;
+    scene.add(thumbnail2);
 }, undefined, function ( error ) {
 	console.error( error );
 });
@@ -284,6 +322,20 @@ loader.load( Cart2_src, function ( gltf ) {
 	console.error( error );
 });
 
+// Import thumbnail3
+
+let thumbnail3;
+loader.load( thumbnail1_src, function ( gltf ) {
+    
+    const model = gltf.scene;
+    
+    model.position.set(45.6, 2.7, 3.1);
+    thumbnail3 = model;
+    scene.add(thumbnail3);
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
 // car3
 let car3;
 loader.load( Cart3_src, function ( gltf ) {
@@ -312,6 +364,20 @@ loader.load( Cart3_src, function ( gltf ) {
 	console.error( error );
 });
 
+// Import thumbnail4
+
+let thumbnail4;
+loader.load( thumbnail1_src, function ( gltf ) {
+    
+    const model = gltf.scene;
+    
+    model.position.set(85.9, 2.7, 3.1);  
+    thumbnail4 = model;
+    scene.add(thumbnail4);
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
 // car4
 let car4;
 loader.load( Cart4_src, function ( gltf ) {
@@ -336,6 +402,19 @@ loader.load( Cart4_src, function ( gltf ) {
 
     scene.add(model);
     car4 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+// Import thumbnail5
+let thumbnail5;
+loader.load( thumbnail1_src, function ( gltf ) {
+    
+    const model = gltf.scene;
+    
+    model.position.set(126.2, 2.7, 3.1);
+    thumbnail5 = model;
+    scene.add(thumbnail5);
 }, undefined, function ( error ) {
 	console.error( error );
 });
@@ -584,6 +663,16 @@ hideText(followTextArray[1], followTextArray[2]);
 
 let canvas = document.querySelector('.webgl');
 
+document.body.onclick = function(e) {
+    if( RESOURCES_LOADED == false || currCam == camera) return;
+    if(objPtr != 0){
+        console.log("hi");
+        if(isOn(followTextArray[objPtr-1])) hideText(followTextArray[objPtr-1]);
+        else showText(followTextArray[objPtr-1]);
+        if(Thumbnails[objPtr-1].visible) Thumbnails[objPtr-1].visible = false;
+        else Thumbnails[objPtr-1].visible = true;
+    }
+}
 
 document.body.onkeydown = function(e) {
     if( RESOURCES_LOADED == false) return;
@@ -600,11 +689,12 @@ document.body.onkeydown = function(e) {
                 objPtr--;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 1; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length + 1; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i-1]);
+                    //showText(followTextArray[i-1]);
                 }
                 else{
+                    Thumbnails[i-1].visible = true;
                     hideText(followTextArray[i-1]);
                 }
             }
@@ -617,7 +707,7 @@ document.body.onkeydown = function(e) {
             }
             for (let i = 1; i < followTextArray.length; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i-1]);
+                    //showText(followTextArray[i-1]);
                 }
                 else{
                     hideText(followTextArray[i-1]);
@@ -635,15 +725,16 @@ function switchCamera() {
     currCam = newCam;
     if(orbit.autoRotate == true) {
         console.log("turnedoff close cam")
-        hideText(followText1);
-        hideText(followText2);
-        hideText(followText3);
-        hideText(followText4);
-        hideText(followText5);
+        for(let i = 0; i < followTextArray.length; i++){
+            hideText(followTextArray[i]);
+        }
+        for(let i = 0; i < followTextArray.length; i++){
+            Thumbnails[i].visible = true;
+        }
     }
-    if(orbit.autoRotate == false) {
-       showText(followTextArray[objPtr-1]); 
-    } 
+    // if(orbit.autoRotate == false) {
+    //     showText(followTextArray[objPtr-1]); 
+    // } 
 }
 
 ///////////////// ANIMATE HERE /////////////////////
@@ -657,7 +748,6 @@ function animate(time) {
         renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
-    console.log(canvas.height);
     orbit.update();
 
     // giving position-limit to the free-view camera
@@ -706,7 +796,6 @@ function animate(time) {
          
         }
     }
-    console.log(followTextArray)
     renderer.render(scene, currCam);
 }
 renderer.setAnimationLoop(animate);
@@ -724,24 +813,6 @@ function resetCarts(){
 
 canvas = document.querySelector('canvas');
 
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-    var keyCode = event.which;
-    if (keyCode == 65 || keyCode == 87 ) {
-        for(let i = 0; i < carts.length ; i++){
-            carts[i].position.x -= moveSpeed;
-        }
-    } else if (keyCode == 68 || keyCode == 83 ) {
-        for(let i = 0; i < carts.length ; i++){
-            carts[i].position.x += moveSpeed;
-        }
-    } else if (keyCode == 82){
-        //resetCarts();
-    }
-    else if (keyCode == 32){
-        Paused = false;
-    }
-};
 
 // Allows the window to resize/scale as needed//
 
