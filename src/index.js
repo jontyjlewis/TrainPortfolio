@@ -17,8 +17,8 @@ const mixers = [];
 let panSpeed = 0.1;
 let moveSpeed = 1;
 let first_random = 0;
-let tree_x_density = 100;
-let tree_z_density = 100;
+let tree_x_density = 50;
+let tree_z_density = 50;
 
 let loadingScreen = {
     scene: new THREE.Scene(),
@@ -76,7 +76,6 @@ manager.onError = function ( url ) {
 
 
 
-const canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit, bounds = 1000;
 
 // models imports
@@ -567,7 +566,6 @@ let thisTrack;
 let currCam = camera;
 let objArray = [car, car2, car3, car4, car5];
 let objPtr = 0;
-camera2.position.x = train.position.x;
 
 const textposition1 = new THREE.Vector3();
 const followText1 = document.getElementById('follow-text-one');
@@ -575,10 +573,14 @@ const textposition2 = new THREE.Vector3();
 const followText2 = document.getElementById('follow-text-two');
 const textposition3 = new THREE.Vector3();
 const followText3 = document.getElementById('follow-text-three');
+const textposition4 = new THREE.Vector3();
+const followText4 = document.getElementById('follow-text-three');
+const textposition5 = new THREE.Vector3();
+const followText5 = document.getElementById('follow-text-three');
 
-const followTextArray = [followText1, followText2, followText3];
+const followTextArray = [followText1, followText2, followText3, followText4, followText5];
 
-canvas = document.querySelector('canvas');
+let canvas = document.querySelector('.webgl');
 
 
 document.body.onkeydown = function(e) {
@@ -654,9 +656,11 @@ function animate(time) {
     if (cameraY <= Math.PI / 9){
         camera.position.y = Math.PI / 9;
     }
-    addFollowText(textposition1, followText1, car2, camera2, canvas);
-    addFollowText(textposition2, followText2, car, camera2, canvas);
-    addFollowText(textposition3, followText3, train, camera2, canvas);
+    addFollowText(textposition1, followText1, car, camera2, canvas);
+    addFollowText(textposition2, followText2, car2, camera2, canvas);
+    addFollowText(textposition3, followText3, car3, camera2, canvas);
+    addFollowText(textposition4, followText4, car4, camera2, canvas);
+    addFollowText(textposition5, followText5, car5, camera2, canvas);
     
     const delta = clock.getDelta();
     
@@ -704,6 +708,8 @@ function resetCarts(){
         carts[i].position.z = carts_ipos[i].z;
     }
 }*/
+
+canvas = document.querySelector('canvas');
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
