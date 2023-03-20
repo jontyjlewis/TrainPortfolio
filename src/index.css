@@ -13,6 +13,7 @@
     border: 3px solid black; */
     display: none;
     text-shadow: 5px 4px 4px #1C1C1C;
+    resize: both;
 }
 
 .title-one {

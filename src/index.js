@@ -9,24 +9,85 @@ import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 import * as dat from 'dat.gui';
 import { Camera } from 'three';
 
+import { LoadingManager } from 'three';
+
 const carts = [], carts_ipos = [];
 
-let panSpeed = 1;
+const mixers = [];
+let panSpeed = 0.1;
 let moveSpeed = 1;
 let first_random = 0;
-let tree_x_density = 0;
-let tree_z_density = 0;
+let tree_x_density = 50;
+let tree_z_density = 50;
+
+let loadingScreen = {
+    scene: new THREE.Scene(),
+    camera: new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        10000
+    ),
+    box: new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.5, 0.5),
+        new THREE.MeshBasicMaterial({color:0x4444ff})
+    )
+};
+var LOADING_MANAGER = null;
+var RESOURCES_LOADED = false;
+
+loadingScreen.box.position.set(0,0,5);
+loadingScreen.camera.lookAt(loadingScreen.box.position);
+loadingScreen.scene.add(loadingScreen.box);
+
+const manager = new THREE.LoadingManager();
+
+manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+
+	console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+
+};
+
+manager.onLoad = function ( ) {
+
+	console.log( 'Loading complete!');
+    if(!RESOURCES_LOADED){
+        camera2.position.x = trainHead.position.x;
+        console.log("train");
+        objArray = [trainHead, car, car2, car3, car4, car5];
+        hideText(followTextArray[1]);
+    }
+    RESOURCES_LOADED = true;
+    
+
+};
+
+manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+
+	console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+
+};
+
+
+manager.onError = function ( url ) {
+
+	console.log( 'There was an error loading ' + url );
+
+};
 
 
 
-
-let canvas = document.querySelector('.webgl');
-let scene, camera, renderer, orbit, bounds = 2000;
+let scene, camera, renderer, orbit, bounds = 1000;
 
 // models imports
-let trainHead_src, trainTracks_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
-trainHead_src = require('../assets/TrainHeadLit.glb');
+let trainHead_src, trainTracks_src, Cart1_src, Cart2_src, Cart3_src, Cart4_src, Cart5_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
+trainHead_src = require('../assets/TrainHeadUnlit.glb');
 trainTracks_src = require('../assets/TrainTracks.glb');
+Cart1_src = require('../assets/Cart1.glb');
+Cart2_src = require('../assets/Cart2.glb');
+Cart3_src = require('../assets/Cart3.glb');
+Cart4_src = require('../assets/Cart4.glb');
+Cart5_src = require('../assets/Cart5.glb');
 tree1_src = require('../assets/Tree1.glb');
 tree2_src = require('../assets/Tree2.glb');
 tree3_src = require('../assets/Tree3.glb');
@@ -38,7 +99,7 @@ tree5_src = require('../assets/Tree5.glb');
 scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88dcf4);
 
-renderer = new THREE.WebGLRenderer();
+renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -61,6 +122,7 @@ const camera2 = new THREE.PerspectiveCamera(
     1000
 );
 scene.add(camera2);
+//camera2.position.set(0, 8, 20+(20*1-(window.innerHeight/1080)));
 camera2.position.set(0, 8, 20);
 
 /*
@@ -77,7 +139,7 @@ cameraT.position.set(0, 8, 20);
 // ORBIT CONTROL STUFF
 orbit = new OrbitControls(camera, renderer.domElement);
 orbit.autoRotate = true;
-orbit.autoRotateSpeed = 0.7;
+orbit.autoRotateSpeed = 0.3;
 orbit.enableDamping = true;
 orbit.enablePan = false;
 orbit.update();
@@ -114,8 +176,9 @@ plane.receiveShadow = true;
 
 
 // Train Front
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(manager);
 // Loading models
+let trainHead;
 // Train Head
 let treeModels = [];
 loader.load( trainHead_src, function ( gltf ) {
@@ -123,10 +186,10 @@ loader.load( trainHead_src, function ( gltf ) {
     model.children[0].material.color.r = 2;
     model.children[0].material.color.g = 2;
     model.children[0].material.color.b = 2;
-    scene.add(model);
-    model.position.set(-73, 2.5, 0);
+    model.position.set(-75, 2.5, 0);
     model.children[0].castShadow = true;
-    model.children[0].rotateY(-3.14159/2);
+    trainHead = model;
+    scene.add(trainHead);
 
 }, undefined, function ( error ) {
 	console.error( error );
@@ -142,9 +205,10 @@ loader.load( trainTracks_src, function ( gltf ) {
     scene.add(model);
     model.position.set(0, 0, 0);
     model.children[0].castShadow = true;
+    model.children[0].receiveShadow = true;
     model.children[0].rotateZ(-3.14159/2);
     trainTracks = model;
-    for(var i = 1, dist = -30, modelWidth = 120, multiplier = 1; i < 40 ; i++){
+    for(var i = 1; i < 40 ; i++){
         if(-bounds+(120*i) > bounds) break;
 
         let newTrack = model.children[0].clone();
@@ -161,112 +225,282 @@ loader.load( trainTracks_src, function ( gltf ) {
 
 
 
-// Environment Models
-// Tree1
-loader.load( tree1_src, function ( gltf ) {
-    const model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
+// car
+let car;
+loader.load( Cart1_src, function ( gltf ) {
     
+    const model = gltf.scene;
+    
+    model.position.set(-35, 2.7, 3.1);   
+    
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5; 
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    
+    const clips = gltf.animations;
+    const mixer = new THREE.AnimationMixer(model);
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    
+    action.play();
+    mixers.push(mixer);
+    
+    scene.add(model);
+    car = model;
 }, undefined, function ( error ) {
 	console.error( error );
 });
-// Tree2
-loader.load( tree2_src, function ( gltf ) {
+
+// car2
+let car2;
+loader.load( Cart2_src, function ( gltf ) {
+    
+    const model = gltf.scene; 
+
+    model.position.set(5.3, 2.7, 3.1);
+
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+
+
+    const mixer = new THREE.AnimationMixer(model);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    
+    action.play();
+    mixers.push(mixer);
+
+    scene.add(model);
+    car2 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+// car3
+let car3;
+loader.load( Cart3_src, function ( gltf ) {
+    
+    const model = gltf.scene; 
+
+    model.position.set(45.6, 2.7, 3.1);
+
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+
+
+    const mixer = new THREE.AnimationMixer(model);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    
+    action.play();
+    mixers.push(mixer);
+
+    scene.add(model);
+    car3 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+// car4
+let car4;
+loader.load( Cart4_src, function ( gltf ) {
+    
+    const model = gltf.scene; 
+
+    model.position.set(85.9, 2.7, 3.1);
+
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+
+
+    const mixer = new THREE.AnimationMixer(model);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    
+    action.play();
+    mixers.push(mixer);
+
+    scene.add(model);
+    car4 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+let car5;
+loader.load( Cart5_src, function ( gltf ) {
+    
+    const model = gltf.scene; 
+
+    model.position.set(126.2, 2.7, 3.1);
+
+    model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].receiveShadow = true;
+    model.children[0].children[0].material.roughness = 0.6;
+    model.children[0].children[0].material.metalness = 0.5;
+
+
+    const mixer = new THREE.AnimationMixer(model);
+    const clips = gltf.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "ArmatureAction.001");
+    const action = mixer.clipAction(clip);
+    
+    action.play();
+    mixers.push(mixer);
+
+    scene.add(model);
+    car5 = model;
+}, undefined, function ( error ) {
+	console.error( error );
+});
+
+
+////////////// Environment Models /////////////////////////
+// Tree1
+loader.load( tree1_src, function ( gltf ) {
     const model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.position.set(50, 0, -50);
     model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
+    let bufferx = 2*bounds/tree_x_density;
+        let bufferz = 2*bounds/tree_z_density;
+        console.log("2 * " + bounds + " / " + tree_x_density +"=" + 2*bounds/tree_x_density);
+        for(let pos_x = -bounds; pos_x <= bounds; pos_x += (2*bounds/tree_x_density)){
+            for(let pos_z = -bounds; pos_z <= bounds; pos_z += (2*bounds/tree_z_density)){
+                if(-50 < pos_z  && pos_z < 50) continue;
+                let this_tree = model.clone();
+                this_tree.position.set(pos_x + (getRandomInt(10*-bufferx,10*bufferx)/25), 0, pos_z + (getRandomInt(10*-bufferz,10*bufferz)/25));
+                this_tree.rotateZ = getRandomInt(0,2*3.14159);
+                let randomScale = 0.0;
+                if(-200 < pos_z  && pos_z < 200){
+                    randomScale = getRandomInt(5,10);
+                }
+                else if(-250 < pos_z  && pos_z < 250){
+                    randomScale = getRandomInt(7,15);
+                }
+                else{
+                    randomScale = getRandomInt(5,22);
+                } 
+                
+                randomScale = randomScale / 15.0;
+                if(getRandomInt(1,100) >= 95){
+                    this_tree.scale.set(randomScale*1.5, randomScale*1.3, randomScale*1.5);
+                }
+                else this_tree.scale.set(randomScale, randomScale, randomScale);
+                this_tree.parent = TreeGroup;
+                TreeGroup.children.push(this_tree);
+                
+            }
+        }
+        scene.add(TreeGroup);
+        TreeGroup.position.x += panSpeed;
+        first_random = true;
     
 }, undefined, function ( error ) {
 	console.error( error );
 });
 
-// Tree3
-loader.load( tree3_src, function ( gltf ) {
-    const model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.position.set(75, 0, -60);
-    model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
-    
-}, undefined, function ( error ) {
-	console.error( error );
-});
-// Tree4
-loader.load( tree4_src, function ( gltf ) {
-    const model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.position.set(30, 0, -60);
-    model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
-    
-}, undefined, function ( error ) {
-	console.error( error );
-});
-// Tree5
-loader.load( tree5_src, function ( gltf ) {
-    const model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.position.set(-20, 0, -55);
-    model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
-    
-}, undefined, function ( error ) {
-	console.error( error );
-});
+//// Tree2
+//loader.load( tree2_src, function ( gltf ) {
+//    const model = gltf.scene;
+//    model.position.set(50, 0, -50);
+//    model.children[0].castShadow = true;
+//    treeModels.push(model.children[0]);
+//    
+//}, undefined, function ( error ) {
+//	console.error( error );
+//});
+//
+//// Tree3
+//loader.load( tree3_src, function ( gltf ) {
+//    const model = gltf.scene;
+//    model.position.set(75, 0, -60);
+//    model.children[0].castShadow = true;
+//    treeModels.push(model.children[0]);
+//    
+//}, undefined, function ( error ) {
+//	console.error( error );
+//});
+//// Tree4
+//loader.load( tree4_src, function ( gltf ) {
+//    const model = gltf.scene;
+//    model.position.set(30, 1, -60);
+//    model.children[0].castShadow = true;
+//    treeModels.push(model.children[0]);
+//    
+//}, undefined, function ( error ) {
+//	console.error( error );
+//});
+//// Tree5
+//loader.load( tree5_src, function ( gltf ) {
+//    const model = gltf.scene;
+//    model.position.set(-20, 0, -55);
+//    model.children[0].castShadow = true;
+//    treeModels.push(model.children[0]);
+//    
+//}, undefined, function ( error ) {
+//	console.error( error );
+//});
 
 
 
 
 // Train Engine
-const trainGeometry = new THREE.BoxGeometry(30, 10, 12);
-const trainMaterial = new THREE.MeshStandardMaterial({
-    color: 0x111111,
-    visible: true
-});
-const train = new THREE.Mesh(trainGeometry, trainMaterial);
-scene.add(train);
-train.position.set(32, 8.5, 0);
-train.castShadow = true;
+//const trainGeometry = new THREE.BoxGeometry(30, 10, 12);
+//const trainMaterial = new THREE.MeshStandardMaterial({
+//    color: 0x111111,
+//    visible: true
+//});
+//const train = new THREE.Mesh(trainGeometry, trainMaterial);
+//scene.add(train);
+//train.position.set(32, 8.5, 0);
+//train.castShadow = true;
 
 // Train Car / Box
-const carGeometry = new THREE.BoxGeometry(30, 10, 12);
-const carMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe50505,
-    visible: true
-});
-const car = new THREE.Mesh(carGeometry, carMaterial);
-scene.add(car);
-car.position.set(0, 8.5, 0);
-car.castShadow = true;
+// const carGeometry = new THREE.BoxGeometry(30, 10, 12);
+// const carMaterial = new THREE.MeshStandardMaterial({
+ //   color: 0xe50505,
+//    visible: true
+// });
+// const car = new THREE.Mesh(carGeometry, carMaterial);
+// scene.add(car);
+// car.position.set(0, 8.5, 0);
+// car.castShadow = true;
 
 // Train Car2 / Box 
-const car2Geometry = new THREE.BoxGeometry(30, 10, 12);
-const car2Material = new THREE.MeshStandardMaterial({
-    color: 0x193569,
-    visible: true
-});
-const car2 = new THREE.Mesh(car2Geometry, car2Material);
-scene.add(car2);
-car2.position.set(-35, 8.5, 0);
-car2.castShadow = true;
+// const car2Geometry = new THREE.BoxGeometry(30, 10, 12);
+// const car2Material = new THREE.MeshStandardMaterial({
+//     color: 0x193569,
+//     visible: true
+// });
+// const car2 = new THREE.Mesh(car2Geometry, car2Material);
+// scene.add(car2);
+// car2.position.set(-35, 8.5, 0);
+// car2.castShadow = true;
 
 // Directional Light
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2);
 scene.add(directionalLight);
-directionalLight.position.set(-100, 100, 100);
+directionalLight.position.set(-400, 400, 400);
 directionalLight.castShadow = true;
-directionalLight.shadow.camera.bottom = -200;
-directionalLight.shadow.camera.top = 200;
-directionalLight.shadow.camera.left = -200;
-directionalLight.shadow.camera.right = 200;
+directionalLight.shadow.camera.bottom = -350;
+directionalLight.shadow.camera.top = 500;
+directionalLight.shadow.camera.left = -700;
+directionalLight.shadow.camera.right = 750;
+directionalLight.shadow.camera.far = 1500;
 
+directionalLight.shadow.bias = -0.0007;
 directionalLight.shadow.mapSize.width = shadowMapSize.width;
 directionalLight.shadow.mapSize.height = shadowMapSize.height;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 
 // Helpers (adds guide lines)
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
@@ -278,7 +512,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const ambientLight = new THREE.AmbientLight(0x442222, 1.6);
 scene.add(ambientLight);
 
-scene.fog = new THREE.FogExp2(0x88dcf4, 0.0005);
+scene.fog = new THREE.FogExp2(0x99dcf4, 0.0013);
 
 // BG
 renderer.setClearColor(0x8bb7ed);
@@ -286,35 +520,28 @@ renderer.setClearColor(0x8bb7ed);
 // GUI
 const gui = new dat.GUI();
 
-const options = {
-    car1Color: '#e50505',
-    visible: true,
-    car2Color: '#193569',
-    visible: true
+var options = {
+    // car1Color: '#e50505',
+    // visible: true,
+    speed: .5
+    //car2Color: '#193569',
+    //visible: true
 };
-gui.addColor(options, 'car1Color').onChange(function(e) {
-    car.material.color.set(e);
-});
-gui.add(options, 'visible').onChange(function(e) {
-    car.material.visible = e;
-});
-gui.addColor(options, 'car2Color').onChange(function(e) {
-    car2.material.color.set(e);
-});
-gui.add(options, 'visible').onChange(function(e) {
-    car2.material.visible = e;
-});
-
-
-function randomizeTrees(){
-    if(!first_random){
-        treeModels.forEach((element) => {
-            scene.add(element);
-            element.position.x = getRandomInt(-120, 120);
-            element.position.z = getRandomInt(-10, -100);
-        });
-        first_random = 1;
+gui.add(options, 'speed' , -.5, 2, .05).name("Speed").onChange(function(e) {
+    panSpeed = e;
+}); 
+var changeCameraButton = {
+    onClick: function() {
+        switchCamera();
     }
+};
+gui.add(changeCameraButton, 'onClick').name('Change Camera');
+
+
+let TreeGroup = new THREE.Group;
+
+function TreeController(){
+    TreeGroup.position.x += panSpeed;
 }
 
 function getRandomInt(min, max) {
@@ -334,9 +561,7 @@ let thisTrack;
 // });
 
 let currCam = camera;
-let objArray = [car2, car, train];
-let objPtr = 2;
-camera2.position.x = train.position.x;
+let objPtr = 0;
 
 const textposition1 = new THREE.Vector3();
 const followText1 = document.getElementById('follow-text-one');
@@ -344,30 +569,24 @@ const textposition2 = new THREE.Vector3();
 const followText2 = document.getElementById('follow-text-two');
 const textposition3 = new THREE.Vector3();
 const followText3 = document.getElementById('follow-text-three');
+const textposition4 = new THREE.Vector3();
+const followText4 = document.getElementById('follow-text-three');
+const textposition5 = new THREE.Vector3();
+const followText5 = document.getElementById('follow-text-three');
 
-const followTextArray = [followText1, followText2, followText3];
+const followTextArray = [followText1, followText2, followText3, followText4, followText5];
+hideText(followTextArray[1], followTextArray[2]);
 
-canvas = document.querySelector('canvas');
+let canvas = document.querySelector('.webgl');
+
 
 document.body.onkeydown = function(e) {
+    if( RESOURCES_LOADED == false) return;
     if (e.key == " " ||
         e.code == "Space" ||
         e.keyCode == 32
-    ) {
-        orbit.autoRotate = !orbit.autoRotate;
-        if(orbit.autoRotate == true) {
-            currCam = camera;
-            hideText(followText1);
-            hideText(followText2);
-            hideText(followText3);
-        }
-        if(orbit.autoRotate == false) {
-
-            currCam = camera2;
-            showText(followTextArray[objPtr]);
-            
-
-        } 
+    ){
+        switchCamera();
     }
     if(currCam == camera2) {
         // left arrow key
@@ -376,27 +595,27 @@ document.body.onkeydown = function(e) {
                 objPtr--;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 0; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i]);
+                    showText(followTextArray[i-1]);
                 }
                 else{
-                    hideText(followTextArray[i]);
+                    hideText(followTextArray[i-1]);
                 }
             }
         }
         // right arrow key
         if (e.keyCode == 39) {
-            if(objPtr < objArray.length) {
+            if(objPtr < objArray.length-1) {
                 objPtr++;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 0; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i]);
+                    showText(followTextArray[i-1]);
                 }
                 else{
-                    hideText(followTextArray[i]);
+                    hideText(followTextArray[i-1]);
                 }
             }
         }
@@ -404,7 +623,36 @@ document.body.onkeydown = function(e) {
 }
 
 
+
+function switchCamera() {
+    orbit.autoRotate = !orbit.autoRotate;
+    var newCam = currCam === camera ? camera2 : camera;
+    currCam = newCam;
+    if(orbit.autoRotate == true) {
+        console.log("turnedoff close cam")
+        hideText(followText1);
+        hideText(followText2);
+        hideText(followText3);
+        hideText(followText4);
+        hideText(followText5);
+    }
+    if(orbit.autoRotate == false) {
+       showText(followTextArray[objPtr-1]); 
+    } 
+}
+
+///////////////// ANIMATE HERE /////////////////////
+const clock = new THREE.Clock();
 function animate(time) {
+    if( RESOURCES_LOADED == false){
+        requestAnimationFrame(animate);
+
+        loadingScreen.box.position.x -= 0.05;
+        loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x)
+        renderer.render(loadingScreen.scene, loadingScreen.camera);
+        return;
+    }
+    console.log(canvas.height);
     orbit.update();
 
     // giving position-limit to the free-view camera
@@ -413,26 +661,45 @@ function animate(time) {
     if (cameraY <= Math.PI / 9){
         camera.position.y = Math.PI / 9;
     }
-    addFollowText(textposition1, followText1, car2, camera2, canvas);
-    addFollowText(textposition2, followText2, car, camera2, canvas);
-    addFollowText(textposition3, followText3, train, camera2, canvas);
+    addFollowText(textposition1, followText1, car, camera2, canvas);
+    addFollowText(textposition2, followText2, car2, camera2, canvas);
+    addFollowText(textposition3, followText3, car3, camera2, canvas);
+    addFollowText(textposition4, followText4, car4, camera2, canvas);
+    addFollowText(textposition5, followText5, car5, camera2, canvas);
     
-    if(treeModels.length == 5){
-        
-       randomizeTrees(); 
-       treeModels.forEach((element) => element.position.x += panSpeed);
+    const delta = clock.getDelta();
+    
+	for ( const mixer of mixers ) {
+        mixer.update( delta );
+        mixer.timeScale = 10*panSpeed;
+    }
+    
+    TreeController(); 
+    
        
-       if(trainTracks != null) {
-           trainTracks.position.x += panSpeed;
-           thisTrack = trainTracks.children[trainTracks.children.length-1];
-           console.log(thisTrack.position.x + trainTracks.position.x);
-           if(thisTrack.position.x + trainTracks.position.x > bounds){
-            console.log("hit");
-            thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
+    if(trainTracks != null) {
+        trainTracks.position.x += panSpeed;
+        thisTrack = trainTracks.children[trainTracks.children.length-1];
+        if(thisTrack.position.x + trainTracks.position.x > bounds){
+         thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
+         trainTracks.children.pop();
+         trainTracks.children.unshift(thisTrack);
+        }
+        if(thisTrack.position.x + trainTracks.position.x < -bounds){
+            thisTrack.position.x = (2*bounds)+thisTrack.position.x;
             trainTracks.children.pop();
             trainTracks.children.unshift(thisTrack);
            }
-       }
+    }
+    if(TreeGroup != null) {
+        TreeGroup.position.x += panSpeed;
+        thisTrack = TreeGroup.children[TreeGroup.children.length-1];
+        if(thisTrack.position.x + TreeGroup.position.x > bounds){
+         thisTrack.position.x = -(2*bounds)+thisTrack.position.x+40;
+         TreeGroup.children.pop();
+         TreeGroup.children.unshift(thisTrack);
+         
+        }
     }
     renderer.render(scene, currCam);
 }
@@ -446,6 +713,10 @@ function resetCarts(){
         carts[i].position.z = carts_ipos[i].z;
     }
 }*/
+
+
+
+canvas = document.querySelector('canvas');
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
@@ -466,13 +737,15 @@ function onDocumentKeyDown(event) {
     }
 };
 
-// Allows the window to resize/scale as needed
+// Allows the window to resize/scale as needed//
+
 window.addEventListener('resize', function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera2.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    camera2.position.y = 8*(1080/window.innerHeight);
 });
 
 /*
