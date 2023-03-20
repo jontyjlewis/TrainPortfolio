@@ -580,7 +580,7 @@ const textposition5 = new THREE.Vector3();
 const followText5 = document.getElementById('follow-text-five');
 
 const followTextArray = [followText1, followText2, followText3, followText4, followText5];
-hideText(followTextArray[1], followTextArray[2]);
+//hideText(followTextArray[1], followTextArray[2]);
 
 let canvas = document.querySelector('.webgl');
 
@@ -615,7 +615,7 @@ document.body.onkeydown = function(e) {
                 objPtr++;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 1; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length + 1; i++){
                 if (i == objPtr){
                     showText(followTextArray[i-1]);
                 }
