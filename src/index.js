@@ -12,10 +12,11 @@ import { Camera } from 'three';
 import { LoadingManager } from 'three';
 
 const carts = [], carts_ipos = [];
-
+let dev_tool = 0;
 const mixers = [];
 let panSpeed = 0.1;
 let moveSpeed = 1;
+let objArray = [];
 let first_random = 0;
 let tree_x_density = 50;
 let tree_z_density = 50;
@@ -745,7 +746,7 @@ window.addEventListener('resize', function() {
     camera.updateProjectionMatrix();
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera2.position.y = 8*(1080/window.innerHeight);
+    camera2.position.z = 20 - dev_tool;
 });
 
 /*
