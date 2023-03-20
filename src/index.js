@@ -77,7 +77,7 @@ const canvas = document.querySelector('.webgl');
 let scene, camera, renderer, orbit, bounds = 1000;
 
 // models imports
-let trainHead_src, trainTracks_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
+let trainHead_src, trainTracks_src, Cart1_src, Cart2_src, Cart3_src, Cart4_src, Cart5_src, tree1_src, tree2_src, tree3_src, tree4_src, tree5_src;
 trainHead_src = require('../assets/TrainHeadUnlit.glb');
 trainTracks_src = require('../assets/TrainTracks.glb');
 Cart1_src = require('../assets/Cart1.glb');
@@ -352,7 +352,39 @@ loader.load( Cart5_src, function ( gltf ) {
 loader.load( tree1_src, function ( gltf ) {
     const model = gltf.scene;
     model.children[0].castShadow = true;
-    treeModels.push(model.children[0]);
+    let bufferx = 2*bounds/tree_x_density;
+        let bufferz = 2*bounds/tree_z_density;
+        console.log("2 * " + bounds + " / " + tree_x_density +"=" + 2*bounds/tree_x_density);
+        for(let pos_x = -bounds; pos_x <= bounds; pos_x += (2*bounds/tree_x_density)){
+            for(let pos_z = -bounds; pos_z <= bounds; pos_z += (2*bounds/tree_z_density)){
+                if(-50 < pos_z  && pos_z < 50) continue;
+                let this_tree = model.clone();
+                this_tree.position.set(pos_x + (getRandomInt(10*-bufferx,10*bufferx)/25), 0, pos_z + (getRandomInt(10*-bufferz,10*bufferz)/25));
+                this_tree.rotateZ = getRandomInt(0,2*3.14159);
+                let randomScale = 0.0;
+                if(-200 < pos_z  && pos_z < 200){
+                    randomScale = getRandomInt(5,10);
+                }
+                else if(-250 < pos_z  && pos_z < 250){
+                    randomScale = getRandomInt(7,15);
+                }
+                else{
+                    randomScale = getRandomInt(5,22);
+                } 
+                
+                randomScale = randomScale / 15.0;
+                if(getRandomInt(1,100) >= 95){
+                    this_tree.scale.set(randomScale*1.5, randomScale*1.3, randomScale*1.5);
+                }
+                else this_tree.scale.set(randomScale, randomScale, randomScale);
+                this_tree.parent = TreeGroup;
+                TreeGroup.children.push(this_tree);
+                
+            }
+        }
+        scene.add(TreeGroup);
+        TreeGroup.position.x += panSpeed;
+        first_random = true;
     
 }, undefined, function ( error ) {
 	console.error( error );
@@ -447,7 +479,7 @@ directionalLight.shadow.camera.left = -700;
 directionalLight.shadow.camera.right = 750;
 directionalLight.shadow.camera.far = 1500;
 
-directionalLight.shadow.bias = -0.0003;
+directionalLight.shadow.bias = -0.0007;
 directionalLight.shadow.mapSize.width = shadowMapSize.width;
 directionalLight.shadow.mapSize.height = shadowMapSize.height;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -497,40 +529,6 @@ gui.add(options, 'speed' , -.5, 2, .05).name("Speed").onChange(function(e) {
 let TreeGroup = new THREE.Group;
 
 function TreeController(){
-    if(!first_random){
-        let bufferx = 2*bounds/tree_x_density;
-        let bufferz = 2*bounds/tree_z_density;
-        console.log("2 * " + bounds + " / " + tree_x_density +"=" + 2*bounds/tree_x_density);
-        for(let pos_x = -bounds; pos_x <= bounds; pos_x += (2*bounds/tree_x_density)){
-            for(let pos_z = -bounds; pos_z <= bounds; pos_z += (2*bounds/tree_z_density)){
-                if(-50 < pos_z  && pos_z < 50) continue;
-                this_tree = treeModels[0].clone();
-                this_tree.position.set(pos_x + (getRandomInt(10*-bufferx,10*bufferx)/25), 0, pos_z + (getRandomInt(10*-bufferz,10*bufferz)/25));
-                this_tree.rotateZ = getRandomInt(0,2*3.14159);
-                let randomScale = 0.0;
-                if(-100 < pos_z  && pos_z < 100){
-                    randomScale = getRandomInt(5,10);
-                }
-                else if(-150 < pos_z  && pos_z < 150){
-                    randomScale = getRandomInt(7,15);
-                }
-                else randomScale = getRandomInt(5,22);
-                
-                randomScale = randomScale / 15.0;
-                if(getRandomInt(1,100) >= 95){
-                    this_tree.scale.set(randomScale*1.5, randomScale*1.3, randomScale*1.5);
-                }
-                else this_tree.scale.set(randomScale, randomScale, randomScale);
-                this_tree.parent = TreeGroup;
-                TreeGroup.children.push(this_tree);
-                
-            }
-        }
-        scene.add(TreeGroup);
-        TreeGroup.position.x += panSpeed;
-        first_random = true;
-    }
-    //TreeGroup.childrenforEach(pos in ).position.x += panSpeed;
     TreeGroup.position.x += panSpeed;
 }
 
