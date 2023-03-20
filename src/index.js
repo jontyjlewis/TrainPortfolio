@@ -12,10 +12,11 @@ import { Camera } from 'three';
 import { LoadingManager } from 'three';
 
 const carts = [], carts_ipos = [];
-
+let dev_tool = -7;
 const mixers = [];
 let panSpeed = 0.1;
 let moveSpeed = 1;
+let objArray = [];
 let first_random = 0;
 let tree_x_density = 50;
 let tree_z_density = 50;
@@ -123,7 +124,7 @@ const camera2 = new THREE.PerspectiveCamera(
 );
 scene.add(camera2);
 //camera2.position.set(0, 8, 20+(20*1-(window.innerHeight/1080)));
-camera2.position.set(0, 8, 20);
+camera2.position.set(0, 12, 20 + 0.0135*(window.innerHeight - 1080));
 
 /*
 const cameraT = new THREE.PerspectiveCamera(
@@ -222,6 +223,9 @@ loader.load( trainTracks_src, function ( gltf ) {
 }, undefined, function ( error ) {
 	console.error( error );
 });
+
+
+//////// Thumbnail imports ////////////
 
 
 
@@ -523,7 +527,8 @@ const gui = new dat.GUI();
 var options = {
     // car1Color: '#e50505',
     // visible: true,
-    speed: .5
+    speed: .5,
+    dist: 3,
     //car2Color: '#193569',
     //visible: true
 };
@@ -701,6 +706,7 @@ function animate(time) {
          
         }
     }
+    console.log(followTextArray)
     renderer.render(scene, currCam);
 }
 renderer.setAnimationLoop(animate);
@@ -745,7 +751,8 @@ window.addEventListener('resize', function() {
     camera.updateProjectionMatrix();
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera2.position.y = 8*(1080/window.innerHeight);
+    camera2.position.z = 20 + 0.0135*(window.innerHeight - 1080);
+    
 });
 
 /*
