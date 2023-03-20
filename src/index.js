@@ -570,9 +570,9 @@ const followText2 = document.getElementById('follow-text-two');
 const textposition3 = new THREE.Vector3();
 const followText3 = document.getElementById('follow-text-three');
 const textposition4 = new THREE.Vector3();
-const followText4 = document.getElementById('follow-text-three');
+const followText4 = document.getElementById('follow-text-four');
 const textposition5 = new THREE.Vector3();
-const followText5 = document.getElementById('follow-text-three');
+const followText5 = document.getElementById('follow-text-five');
 
 const followTextArray = [followText1, followText2, followText3, followText4, followText5];
 hideText(followTextArray[1], followTextArray[2]);

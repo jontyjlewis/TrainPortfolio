@@ -13,7 +13,6 @@
     border: 3px solid black; */
     display: none;
     text-shadow: 5px 4px 4px #1C1C1C;
-    resize: both;
 }
 
 .title-one {
@@ -31,7 +30,6 @@
     justify-content: center;
     background: none;
     border: none;
-    text-shadow: 5px 3px 4px #1C1C1C;
 }
 /* Copy */
 
@@ -120,6 +118,42 @@
     width: auto; 
     max-width: 400px; 
     max-height: 220px;
+}
+
+.collaborator{
+    position: absolute;
+    white-space: nowrap;
+    left: -100px;
+    top: -130px;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 150;
+    font-size: 1.2rem;
+    position: absolute;
+    margin-left: 200px;
+}
+.box{
+    left: -450px;
+    top: -100px;
+    position: absolute;
+    width: 900px;
+    height: 2px;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+.explain{
+    top: -40px;
+    font-family: Stencil Std;
+    color: white;
+    font-weight: 150;
+    font-size: 1.2rem;
+    position: absolute;
+    margin-left: 80px;
+    width: 400px;
+    border: 1px solid;
+    word-wrap: break-word; 
 }
 
 body {
