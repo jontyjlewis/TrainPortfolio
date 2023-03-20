@@ -155,6 +155,16 @@
     border: 1px solid;
     word-wrap: break-word; 
 }
+.stPic {
+    position: absolute;
+    left: -450px;
+    top: -65px;
+    padding: 5px;
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+    max-height: 220px;
+}
 
 body {
     margin: 0 auto 80px;
