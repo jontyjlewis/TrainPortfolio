@@ -55,6 +55,7 @@ manager.onLoad = function ( ) {
         camera2.position.x = trainHead.position.x;
         console.log("train");
         objArray = [trainHead, car, car2, car3, car4, car5];
+        hideText(followTextArray[1]);
     }
     RESOURCES_LOADED = true;
     
@@ -121,6 +122,7 @@ const camera2 = new THREE.PerspectiveCamera(
     1000
 );
 scene.add(camera2);
+//camera2.position.set(0, 8, 20+(20*1-(window.innerHeight/1080)));
 camera2.position.set(0, 8, 20);
 
 /*
@@ -341,7 +343,7 @@ loader.load( Cart5_src, function ( gltf ) {
 
     model.position.set(126.2, 2.7, 3.1);
 
-    //model.children[0].children[0].castShadow = true;
+    model.children[0].children[0].castShadow = true;
     model.children[0].children[0].receiveShadow = true;
     model.children[0].children[0].material.roughness = 0.6;
     model.children[0].children[0].material.metalness = 0.5;
@@ -525,21 +527,16 @@ var options = {
     //car2Color: '#193569',
     //visible: true
 };
-//gui.addColor(options, 'car1Color').onChange(function(e) {
-//    car.material.color.set(e);
-//});
-//gui.add(options, 'visible').onChange(function(e) {
-//    car.material.visible = e;
-//});
 gui.add(options, 'speed' , -.5, 2, .05).name("Speed").onChange(function(e) {
     panSpeed = e;
 }); 
-//gui.addColor(options, 'car2Color').onChange(function(e) {
-//    car2.material.color.set(e);
-//});
-//gui.add(options, 'visible').onChange(function(e) {
-//    car2.material.visible = e;
-//});
+var changeCameraButton = {
+    onClick: function() {
+        switchCamera();
+    }
+};
+gui.add(changeCameraButton, 'onClick').name('Change Camera');
+
 
 let TreeGroup = new THREE.Group;
 
@@ -564,7 +561,6 @@ let thisTrack;
 // });
 
 let currCam = camera;
-let objArray = [car, car2, car3, car4, car5];
 let objPtr = 0;
 
 const textposition1 = new THREE.Vector3();
@@ -579,29 +575,18 @@ const textposition5 = new THREE.Vector3();
 const followText5 = document.getElementById('follow-text-three');
 
 const followTextArray = [followText1, followText2, followText3, followText4, followText5];
+hideText(followTextArray[1], followTextArray[2]);
 
 let canvas = document.querySelector('.webgl');
 
 
 document.body.onkeydown = function(e) {
+    if( RESOURCES_LOADED == false) return;
     if (e.key == " " ||
         e.code == "Space" ||
         e.keyCode == 32
-    ) {
-        orbit.autoRotate = !orbit.autoRotate;
-        if(orbit.autoRotate == true) {
-            currCam = camera;
-            hideText(followText1);
-            hideText(followText2);
-            hideText(followText3);
-        }
-        if(orbit.autoRotate == false) {
-
-            currCam = camera2;
-            showText(followTextArray[objPtr]);
-            
-
-        } 
+    ){
+        switchCamera();
     }
     if(currCam == camera2) {
         // left arrow key
@@ -610,12 +595,12 @@ document.body.onkeydown = function(e) {
                 objPtr--;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 0; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i]);
+                    showText(followTextArray[i-1]);
                 }
                 else{
-                    hideText(followTextArray[i]);
+                    hideText(followTextArray[i-1]);
                 }
             }
         }
@@ -625,16 +610,35 @@ document.body.onkeydown = function(e) {
                 objPtr++;
                 camera2.position.x = objArray[objPtr].position.x;
             }
-            for (let i = 0; i < followTextArray.length; i++){
+            for (let i = 1; i < followTextArray.length; i++){
                 if (i == objPtr){
-                    showText(followTextArray[i]);
+                    showText(followTextArray[i-1]);
                 }
                 else{
-                    hideText(followTextArray[i]);
+                    hideText(followTextArray[i-1]);
                 }
             }
         }
     }
+}
+
+
+
+function switchCamera() {
+    orbit.autoRotate = !orbit.autoRotate;
+    var newCam = currCam === camera ? camera2 : camera;
+    currCam = newCam;
+    if(orbit.autoRotate == true) {
+        console.log("turnedoff close cam")
+        hideText(followText1);
+        hideText(followText2);
+        hideText(followText3);
+        hideText(followText4);
+        hideText(followText5);
+    }
+    if(orbit.autoRotate == false) {
+       showText(followTextArray[objPtr-1]); 
+    } 
 }
 
 ///////////////// ANIMATE HERE /////////////////////
@@ -648,6 +652,7 @@ function animate(time) {
         renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
+    console.log(canvas.height);
     orbit.update();
 
     // giving position-limit to the free-view camera
@@ -709,6 +714,8 @@ function resetCarts(){
     }
 }*/
 
+
+
 canvas = document.querySelector('canvas');
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
@@ -730,13 +737,15 @@ function onDocumentKeyDown(event) {
     }
 };
 
-// Allows the window to resize/scale as needed
+// Allows the window to resize/scale as needed//
+
 window.addEventListener('resize', function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera2.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     camera2.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    camera2.position.y = 8*(1080/window.innerHeight);
 });
 
 /*

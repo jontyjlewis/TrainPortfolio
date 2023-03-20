@@ -10,6 +10,7 @@
     background: #d8ac26;
     border: 3px solid black; */
     display: none;
+    resize: both;
 }
 
 .title-one {
