@@ -1,3 +1,5 @@
+
+/* copy */
 .follow-text {
     position: absolute;
     /* z-index: 100;
@@ -10,6 +12,7 @@
     background: #d8ac26;
     border: 3px solid black; */
     display: none;
+    text-shadow: 5px 4px 4px #1C1C1C;
 }
 
 .title-one {
@@ -27,7 +30,10 @@
     justify-content: center;
     background: none;
     border: none;
+    text-shadow: 5px 3px 4px #1C1C1C;
 }
+/* Copy */
+
 .members {
     position: absolute;
     left: -450px;
@@ -63,6 +69,7 @@
     border: none;
     /* white-space: nowrap; */
 }
+
 .trianpic {
     position: absolute;
     left: 40px;
